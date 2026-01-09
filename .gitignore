@@ -44,6 +44,8 @@ service-account.json
 # Large database exports
 database_export_*.json
 *_database.json
+tourism_data_google_enhanced.json
+sample_tourism_data.json
 
 # IDEs
 .vscode/
