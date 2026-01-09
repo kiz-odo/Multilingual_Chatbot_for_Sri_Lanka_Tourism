@@ -1,0 +1,46 @@
+apiVersion: storage.k8s.io/v1
+kind: StorageClass
+metadata:
+  name: fast-ssd
+  labels:
+    app: tourism-chatbot
+provisioner: kubernetes.io/gce-pd  # Change based on cloud provider
+parameters:
+  type: pd-ssd  # GCP SSD
+  replication-type: regional-pd
+  fstype: ext4
+allowVolumeExpansion: true
+volumeBindingMode: WaitForFirstConsumer
+reclaimPolicy: Retain
+
+---
+# AWS EBS (for AWS EKS)
+# apiVersion: storage.k8s.io/v1
+# kind: StorageClass
+# metadata:
+#   name: fast-ssd
+# provisioner: kubernetes.io/aws-ebs
+# parameters:
+#   type: gp3
+#   iops: "3000"
+#   throughput: "125"
+#   fsType: ext4
+#   encrypted: "true"
+# allowVolumeExpansion: true
+# volumeBindingMode: WaitForFirstConsumer
+# reclaimPolicy: Retain
+
+---
+# Azure Disk (for Azure AKS)
+# apiVersion: storage.k8s.io/v1
+# kind: StorageClass
+# metadata:
+#   name: fast-ssd
+# provisioner: kubernetes.io/azure-disk
+# parameters:
+#   storageaccounttype: Premium_LRS
+#   kind: Managed
+#   cachingmode: ReadOnly
+# allowVolumeExpansion: true
+# volumeBindingMode: WaitForFirstConsumer
+# reclaimPolicy: Retain

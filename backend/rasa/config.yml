@@ -1,0 +1,80 @@
+# Rasa Configuration for Sri Lanka Tourism Multilingual Chatbot
+
+version: "3.1"
+
+# Recipe for building the NLU and Core models
+recipe: default.v1
+
+# Language configuration
+language: en
+
+# Pipeline for Natural Language Understanding (NLU)
+pipeline:
+  # Language model for tokenization and featurization
+  - name: SpacyNLP
+    model: "en_core_web_md"
+    case_sensitive: false
+  
+  # Tokenization
+  - name: SpacyTokenizer
+  
+  # Featurization for text
+  - name: SpacyFeaturizer
+    pooling: mean
+  
+  # Regular expression features
+  - name: RegexFeaturizer
+  
+  # Lookup table features
+  - name: LexicalSyntacticFeaturizer
+  
+  # Count vector featurizer
+  - name: CountVectorsFeaturizer
+    analyzer: char_wb
+    min_ngram: 1
+    max_ngram: 4
+  
+  # Language model featurizer for better semantic understanding
+  - name: LanguageModelFeaturizer
+    model_name: "bert"
+    model_weights: "rasa/LaBSE"
+    cache_dir: null
+  
+  # Intent classification
+  - name: DIETClassifier
+    epochs: 100
+    constrain_similarities: true
+    model_confidence: cosine
+    
+  # Entity extraction
+  - name: EntitySynonymMapper
+  
+  # Response selection
+  - name: ResponseSelector
+    epochs: 100
+    retrieval_intent: chitchat
+
+# Policies for dialogue management
+policies:
+  # Memoization policy for exact matching
+  - name: MemoizationPolicy
+  
+  # Rule policy for handling rules
+  - name: RulePolicy
+    core_fallback_threshold: 0.4
+    core_fallback_action_name: "action_default_fallback"
+    enable_fallback_prediction: True
+  
+  # Transformer-based dialogue policy
+  - name: UnexpecTEDIntentPolicy
+    max_history: 5
+    epochs: 100
+  
+  # TEDPolicy for end-to-end dialogue
+  - name: TEDPolicy
+    max_history: 5
+    epochs: 100
+    constrain_similarities: true
+
+# Assistant ID
+assistant_id: sri_lanka_tourism_bot

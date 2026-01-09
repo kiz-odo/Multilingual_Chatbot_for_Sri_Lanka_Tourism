@@ -1,0 +1,294 @@
+# Rasa Domain for Sri Lanka Tourism Multilingual Chatbot
+
+version: "3.1"
+
+# Intents that the bot can understand
+intents:
+  # Greetings and basic conversation
+  - greet
+  - goodbye
+  - affirm
+  - deny
+  - mood_great
+  - mood_unhappy
+  - bot_challenge
+  - thank
+  
+  # Tourism information requests
+  - ask_attractions
+  - ask_attractions_by_category
+  - ask_attraction_details
+  - ask_restaurants
+  - ask_restaurant_details
+  - ask_hotels
+  - ask_hotel_details
+  - ask_transport
+  - ask_transport_details
+  - ask_events
+  - ask_event_details
+  - ask_emergency
+  - ask_emergency_details
+  
+  # Location and navigation
+  - ask_location
+  - ask_directions
+  - ask_distance
+  - ask_travel_time
+  
+  # Food and cuisine
+  - ask_food
+  - ask_local_dishes
+  - ask_dietary_restrictions
+  
+  # Weather and climate
+  - ask_weather
+  - ask_best_time_visit
+  
+  # Cultural information
+  - ask_culture
+  - ask_festivals
+  - ask_customs
+  - ask_language_help
+  
+  # Practical information
+  - ask_currency
+  - ask_visa
+  - ask_safety
+  - ask_budget
+  
+  # Language switching
+  - change_language
+  
+  # Chitchat and fallback
+  - chitchat
+  - out_of_scope
+
+# Entities that can be extracted from user messages
+entities:
+  - location
+  - attraction_name
+  - restaurant_name
+  - hotel_name
+  - transport_type
+  - cuisine_type
+  - price_range
+  - date
+  - time
+  - number
+  - language
+  - category
+  - emergency_type
+
+# Slots to store information during conversation
+slots:
+  user_language:
+    type: text
+    initial_value: "en"
+    influence_conversation: false
+    mappings:
+      - type: from_entity
+        entity: language
+    
+  user_location:
+    type: text
+    mappings:
+      - type: from_entity
+        entity: location
+    initial_value: null
+    influence_conversation: true
+    
+  preferred_category:
+    type: text
+    initial_value: null
+    influence_conversation: true
+    mappings:
+      - type: from_entity
+        entity: category
+    
+  budget_range:
+    type: text
+    initial_value: null
+    influence_conversation: true
+    mappings:
+      - type: from_entity
+        entity: budget
+    
+  travel_dates:
+    type: text
+    initial_value: null
+    influence_conversation: false
+    mappings:
+      - type: from_entity
+        entity: date
+    
+  party_size:
+    type: float
+    initial_value: 1
+    min_value: 1
+    max_value: 20
+    influence_conversation: false
+    mappings:
+      - type: from_entity
+        entity: number
+    
+  requested_attraction:
+    type: text
+    initial_value: null
+    influence_conversation: false
+    mappings:
+      - type: from_entity
+        entity: attraction
+    
+  requested_restaurant:
+    type: text
+    initial_value: null
+    influence_conversation: false
+    mappings:
+      - type: from_entity
+        entity: restaurant
+    
+  requested_hotel:
+    type: text
+    initial_value: null
+    influence_conversation: false
+    mappings:
+      - type: from_entity
+        entity: hotel
+    
+  location:
+    type: text
+    initial_value: null
+    influence_conversation: true
+    mappings:
+      - type: from_entity
+        entity: location
+    
+  cuisine_type:
+    type: text
+    initial_value: null
+    influence_conversation: true
+    mappings:
+      - type: from_entity
+        entity: cuisine_type
+
+# Responses that the bot can give
+responses:
+  # Greetings
+  utter_greet:
+    - text: "Hello! I'm your Sri Lanka Tourism assistant. How can I help you explore beautiful Sri Lanka today? 🇱🇰"
+    - text: "Welcome! I'm here to help you discover the wonders of Sri Lanka. What would you like to know?"
+    - text: "Ayubowan! I'm your guide to Sri Lanka's amazing attractions, food, and culture. How may I assist you?"
+  
+  utter_greet_sinhala:
+    - text: "ආයුබෝවන්! මම ඔබේ ශ්‍රී ලංකා සංචාරක සහායකයා. අද මම ඔබට ලස්සන ශ්‍රී ලංකාව ගවේෂණය කිරීමට කෙසේ උදව් කළ හැකිද? 🇱🇰"
+  
+  utter_greet_tamil:
+    - text: "வணக்கம்! நான் உங்கள் இலங்கை சுற்றுலா உதவியாளர். இன்று அழகிய இலங்கையை ஆராய நான் உங்களுக்கு எப்படி உதவ முடியும்? 🇱🇰"
+  
+  # Goodbyes
+  utter_goodbye:
+    - text: "Goodbye! Have a wonderful time exploring Sri Lanka! 🌴"
+    - text: "Thank you for using our tourism assistant. Enjoy your journey in Sri Lanka!"
+    - text: "Safe travels and see you again soon! 👋"
+  
+  # Confirmations
+  utter_affirm:
+    - text: "Great! Let me help you with that."
+    - text: "Perfect! I'll get that information for you."
+  
+  utter_deny:
+    - text: "No problem! What else would you like to know about Sri Lanka?"
+    - text: "That's okay! How else can I assist you today?"
+  
+  # Mood responses
+  utter_happy:
+    - text: "That's wonderful! Sri Lanka has so much beauty to offer. What interests you most?"
+    - text: "I'm glad to hear that! Let's make your Sri Lanka experience even better."
+  
+  utter_cheer_up:
+    - text: "Sri Lanka's natural beauty and warm hospitality will surely lift your spirits! What would you like to explore?"
+    - text: "Don't worry! There's so much amazing things to see and do in Sri Lanka. Let me help you find something exciting!"
+  
+  # Thanks
+  utter_thank:
+    - text: "You're very welcome! I'm here to help make your Sri Lanka experience amazing."
+    - text: "Happy to help! Is there anything else you'd like to know about Sri Lanka?"
+  
+  # Bot challenge
+  utter_iamabot:
+    - text: "I'm your AI-powered Sri Lanka Tourism assistant, here to help you discover the pearl of the Indian Ocean! 🤖"
+  
+  # Attractions
+  utter_ask_attractions:
+    - text: "Sri Lanka has incredible attractions! Here are some categories:\n🏛️ Historical sites (Sigiriya, Anuradhapura)\n🏖️ Beautiful beaches (Mirissa, Unawatuna)\n🐘 Wildlife parks (Yala, Udawalawe)\n⛰️ Hill country (Kandy, Nuwara Eliya)\n💧 Waterfalls (Diyaluma, Sekumpura)\n\nWhat type interests you most?"
+  
+  utter_ask_restaurants:
+    - text: "Sri Lankan cuisine is amazing! I can help you find:\n🍛 Traditional Sri Lankan restaurants\n🦀 Fresh seafood places\n🌶️ Street food spots\n🍃 Vegetarian/vegan options\n🏨 Fine dining experiences\n\nWhat type of dining experience are you looking for?"
+  
+  utter_ask_hotels:
+    - text: "I can help you find accommodation in Sri Lanka:\n🏨 Luxury hotels and resorts\n🏡 Boutique guesthouses\n🏖️ Beach resorts\n⛰️ Hill country hotels\n💰 Budget-friendly options\n\nWhat's your preference and budget range?"
+  
+  utter_ask_transport:
+    - text: "Getting around Sri Lanka:\n🚂 Scenic train journeys (highly recommended!)\n🚌 Public buses (budget-friendly)\n🚗 Private cars/taxis\n🛺 Tuk-tuks (for short distances)\n✈️ Domestic flights\n\nWhere are you planning to go?"
+  
+  # Emergency information
+  utter_emergency_info:
+    - text: "Important emergency numbers in Sri Lanka:\n🚨 Police: 119\n🚑 Ambulance: 1990\n🚒 Fire: 110\n🏥 Accident Service: 1990\n📞 Tourist Hotline: 1912\n\nFor tourist police assistance, contact 119 and ask for tourist police."
+  
+  # Weather information
+  utter_weather_info:
+    - text: "Sri Lanka has a tropical climate:\n🌞 Dry season: December-March (West/South coast)\n🌧️ Monsoons: May-September (Southwest), October-January (Northeast)\n🌡️ Temperature: 26-30°C year-round\n⛰️ Hill country is cooler: 15-20°C\n\nWhen are you planning to visit?"
+  
+  # Cultural information
+  utter_culture_info:
+    - text: "Sri Lankan culture is rich and diverse:\n🏛️ Buddhism is the main religion (70%)\n👗 Dress modestly when visiting temples\n🙏 Remove shoes before entering religious sites\n🤝 Greeting: 'Ayubowan' (may you live long)\n🎭 Traditional arts: Kandyan dancing, mask making\n\nWould you like to know about specific customs or festivals?"
+  
+  # Language help
+  utter_language_help:
+    - text: "Languages in Sri Lanka:\n🗣️ Sinhala (75% of population)\n🗣️ Tamil (25% of population)\n🗣️ English (widely spoken in tourist areas)\n\nUseful phrases:\nThank you: ස්තූතියි (Sinhala), நன்றி (Tamil)\nHello: ආයුබෝවන් (Sinhala), வணக்கம் (Tamil)\n\nI can help you in multiple languages!"
+  
+  # Default fallback
+  utter_default:
+    - text: "I'm sorry, I didn't understand that. I can help you with information about Sri Lankan attractions, restaurants, hotels, transport, culture, and more. What would you like to know?"
+    - text: "I'm not sure about that. Try asking me about places to visit, where to eat, where to stay, or how to get around in Sri Lanka!"
+  
+  # Out of scope
+  utter_out_of_scope:
+    - text: "I'm specialized in Sri Lanka tourism information. I can help you with attractions, food, accommodation, transport, culture, and travel tips. What would you like to explore?"
+
+# Actions that the bot can perform
+actions:
+  - action_search_attractions
+  - action_search_restaurants
+  - action_search_hotels
+  - action_search_transport
+  - action_get_directions
+  - action_get_weather
+  - action_change_language
+  - action_get_emergency_info
+  - action_default_fallback
+  - action_ask_rephrase
+
+# Forms for collecting information
+forms:
+  attraction_search_form:
+    required_slots:
+      - location
+      - preferred_category
+  
+  restaurant_search_form:
+    required_slots:
+      - location
+      - cuisine_type
+      - budget_range
+  
+  hotel_search_form:
+    required_slots:
+      - location
+      - budget_range
+      - travel_dates
+
+# Session configuration
+session_config:
+  session_expiration_time: 60
+  carry_over_slots_to_new_session: true

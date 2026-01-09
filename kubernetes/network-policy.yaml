@@ -1,0 +1,167 @@
+apiVersion: networking.k8s.io/v1
+kind: NetworkPolicy
+metadata:
+  name: backend-network-policy
+  namespace: tourism-chatbot
+spec:
+  podSelector:
+    matchLabels:
+      app: tourism-backend
+  policyTypes:
+  - Ingress
+  - Egress
+  
+  ingress:
+  # Allow ingress from nginx ingress controller
+  - from:
+    - namespaceSelector:
+        matchLabels:
+          name: ingress-nginx
+    ports:
+    - protocol: TCP
+      port: 8000
+  
+  # Allow ingress from prometheus for metrics
+  - from:
+    - namespaceSelector:
+        matchLabels:
+          name: monitoring
+    - podSelector:
+        matchLabels:
+          app: prometheus
+    ports:
+    - protocol: TCP
+      port: 9090
+  
+  egress:
+  # Allow DNS
+  - to:
+    - namespaceSelector:
+        matchLabels:
+          name: kube-system
+    ports:
+    - protocol: UDP
+      port: 53
+  
+  # Allow MongoDB
+  - to:
+    - podSelector:
+        matchLabels:
+          app: tourism-mongodb
+    ports:
+    - protocol: TCP
+      port: 27017
+  
+  # Allow Redis
+  - to:
+    - podSelector:
+        matchLabels:
+          app: tourism-redis
+    ports:
+    - protocol: TCP
+      port: 6379
+  
+  # Allow Rasa
+  - to:
+    - podSelector:
+        matchLabels:
+          app: tourism-rasa
+    ports:
+    - protocol: TCP
+      port: 5005
+  
+  # Allow external HTTPS (for external APIs)
+  - to:
+    - namespaceSelector: {}
+    ports:
+    - protocol: TCP
+      port: 443
+    - protocol: TCP
+      port: 80
+
+---
+apiVersion: networking.k8s.io/v1
+kind: NetworkPolicy
+metadata:
+  name: mongodb-network-policy
+  namespace: tourism-chatbot
+spec:
+  podSelector:
+    matchLabels:
+      app: tourism-mongodb
+  policyTypes:
+  - Ingress
+  - Egress
+  
+  ingress:
+  # Only allow from backend
+  - from:
+    - podSelector:
+        matchLabels:
+          app: tourism-backend
+    ports:
+    - protocol: TCP
+      port: 27017
+  
+  # Allow MongoDB replica communication
+  - from:
+    - podSelector:
+        matchLabels:
+          app: tourism-mongodb
+    ports:
+    - protocol: TCP
+      port: 27017
+  
+  egress:
+  # Allow DNS
+  - to:
+    - namespaceSelector:
+        matchLabels:
+          name: kube-system
+    ports:
+    - protocol: UDP
+      port: 53
+  
+  # Allow MongoDB replica communication
+  - to:
+    - podSelector:
+        matchLabels:
+          app: tourism-mongodb
+    ports:
+    - protocol: TCP
+      port: 27017
+
+---
+apiVersion: networking.k8s.io/v1
+kind: NetworkPolicy
+metadata:
+  name: redis-network-policy
+  namespace: tourism-chatbot
+spec:
+  podSelector:
+    matchLabels:
+      app: tourism-redis
+  policyTypes:
+  - Ingress
+  
+  ingress:
+  # Only allow from backend
+  - from:
+    - podSelector:
+        matchLabels:
+          app: tourism-backend
+    ports:
+    - protocol: TCP
+      port: 6379
+
+---
+apiVersion: networking.k8s.io/v1
+kind: NetworkPolicy
+metadata:
+  name: default-deny-all
+  namespace: tourism-chatbot
+spec:
+  podSelector: {}
+  policyTypes:
+  - Ingress
+  - Egress

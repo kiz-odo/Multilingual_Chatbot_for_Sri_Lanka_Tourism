@@ -1,0 +1,7 @@
+apiVersion: v1
+kind: Namespace
+metadata:
+  name: tourism-chatbot
+  labels:
+    name: tourism-chatbot
+    environment: production

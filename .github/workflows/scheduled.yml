@@ -1,0 +1,116 @@
+name: Scheduled Tasks
+
+on:
+  schedule:
+    # Run database backup daily at 2 AM UTC
+    - cron: '0 2 * * *'
+    # Run security scan weekly on Sundays
+    - cron: '0 4 * * 0'
+  workflow_dispatch:
+    inputs:
+      task:
+        description: 'Task to run'
+        required: true
+        type: choice
+        options:
+          - backup
+          - security-scan
+          - cleanup
+
+env:
+  PYTHON_VERSION: '3.11'
+
+jobs:
+  # Daily database backup
+  database-backup:
+    name: Database Backup
+    runs-on: ubuntu-latest
+    if: github.event.schedule == '0 2 * * *' || github.event.inputs.task == 'backup'
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
+
+      - name: Set up Python
+        uses: actions/setup-python@v5
+        with:
+          python-version: ${{ env.PYTHON_VERSION }}
+
+      - name: Install MongoDB tools
+        run: |
+          wget -qO - https://www.mongodb.org/static/pgp/server-6.0.asc | sudo apt-key add -
+          echo "deb [ arch=amd64,arm64 ] https://repo.mongodb.org/apt/ubuntu focal/mongodb-org/6.0 multiverse" | sudo tee /etc/apt/sources.list.d/mongodb-org-6.0.list
+          sudo apt-get update
+          sudo apt-get install -y mongodb-database-tools
+
+      - name: Run backup script
+        run: |
+          chmod +x scripts/automated_backup.sh
+          ./scripts/automated_backup.sh
+        env:
+          MONGODB_URL: ${{ secrets.MONGODB_URL }}
+          AWS_ACCESS_KEY_ID: ${{ secrets.AWS_ACCESS_KEY_ID }}
+          AWS_SECRET_ACCESS_KEY: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
+          BACKUP_S3_BUCKET: ${{ secrets.BACKUP_S3_BUCKET }}
+
+      - name: Upload backup artifact
+        uses: actions/upload-artifact@v4
+        with:
+          name: db-backup-${{ github.run_id }}
+          path: backups/
+          retention-days: 7
+
+      - name: Notify on backup completion
+        if: success()
+        run: echo "Database backup completed successfully"
+
+  # Weekly security scan
+  security-scan:
+    name: Weekly Security Scan
+    runs-on: ubuntu-latest
+    if: github.event.schedule == '0 4 * * 0' || github.event.inputs.task == 'security-scan'
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
+
+      - name: Set up Python
+        uses: actions/setup-python@v5
+        with:
+          python-version: ${{ env.PYTHON_VERSION }}
+          cache: 'pip'
+
+      - name: Install security tools
+        run: |
+          pip install bandit safety pip-audit semgrep
+
+      - name: Run Bandit
+        run: bandit -r backend/app -f json -o bandit-report.json || true
+
+      - name: Run pip-audit
+        run: pip-audit --format=json --output=pip-audit-report.json || true
+
+      - name: Run Semgrep
+        run: semgrep --config=auto backend/app --json --output=semgrep-report.json || true
+
+      - name: Upload security reports
+        uses: actions/upload-artifact@v4
+        with:
+          name: security-reports-${{ github.run_id }}
+          path: |
+            bandit-report.json
+            pip-audit-report.json
+            semgrep-report.json
+
+  # Cleanup old artifacts and caches
+  cleanup:
+    name: Cleanup
+    runs-on: ubuntu-latest
+    if: github.event.inputs.task == 'cleanup'
+    steps:
+      - name: Delete old workflow runs
+        uses: Mattraks/delete-workflow-runs@v2
+        with:
+          retain_days: 30
+          keep_minimum_runs: 10
+
+      - name: Cleanup complete
+        run: echo "Cleanup completed successfully"

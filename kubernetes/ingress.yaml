@@ -1,0 +1,127 @@
+apiVersion: networking.k8s.io/v1
+kind: Ingress
+metadata:
+  name: tourism-ingress
+  namespace: tourism-chatbot
+  labels:
+    app: tourism-chatbot
+  annotations:
+    # NGINX Ingress Controller
+    kubernetes.io/ingress.class: "nginx"
+    nginx.ingress.kubernetes.io/ssl-redirect: "true"
+    nginx.ingress.kubernetes.io/force-ssl-redirect: "true"
+    
+    # Rate Limiting
+    nginx.ingress.kubernetes.io/limit-rps: "100"
+    nginx.ingress.kubernetes.io/limit-rpm: "6000"
+    nginx.ingress.kubernetes.io/limit-connections: "100"
+    
+    # CORS
+    nginx.ingress.kubernetes.io/enable-cors: "true"
+    nginx.ingress.kubernetes.io/cors-allow-origin: "https://tourism.lk, https://www.tourism.lk"
+    nginx.ingress.kubernetes.io/cors-allow-methods: "GET, POST, PUT, DELETE, OPTIONS"
+    nginx.ingress.kubernetes.io/cors-allow-headers: "Authorization, Content-Type"
+    nginx.ingress.kubernetes.io/cors-allow-credentials: "true"
+    
+    # Security Headers
+    nginx.ingress.kubernetes.io/configuration-snippet: |
+      more_set_headers "X-Content-Type-Options: nosniff";
+      more_set_headers "X-Frame-Options: DENY";
+      more_set_headers "X-XSS-Protection: 1; mode=block";
+      more_set_headers "Strict-Transport-Security: max-age=31536000; includeSubDomains; preload";
+      more_set_headers "Content-Security-Policy: default-src 'self'; script-src 'self' 'unsafe-inline' 'unsafe-eval' https://cdn.jsdelivr.net; style-src 'self' 'unsafe-inline' https://cdn.jsdelivr.net https://fonts.googleapis.com;";
+    
+    # Connection settings
+    nginx.ingress.kubernetes.io/proxy-connect-timeout: "60"
+    nginx.ingress.kubernetes.io/proxy-send-timeout: "60"
+    nginx.ingress.kubernetes.io/proxy-read-timeout: "60"
+    nginx.ingress.kubernetes.io/proxy-body-size: "10m"
+    
+    # Load Balancing
+    nginx.ingress.kubernetes.io/upstream-hash-by: "$request_uri"
+    nginx.ingress.kubernetes.io/load-balance: "ewma"
+    
+    # Compression
+    nginx.ingress.kubernetes.io/use-gzip: "true"
+    nginx.ingress.kubernetes.io/gzip-level: "6"
+    
+    # Certificate Manager (for automatic SSL)
+    cert-manager.io/cluster-issuer: "letsencrypt-prod"
+    
+    # Monitoring
+    nginx.ingress.kubernetes.io/enable-opentracing: "true"
+    nginx.ingress.kubernetes.io/enable-access-log: "true"
+    nginx.ingress.kubernetes.io/enable-rewrite-log: "true"
+spec:
+  tls:
+  - hosts:
+    - api.tourism.lk
+    - tourism.lk
+    secretName: tourism-tls-cert
+  
+  rules:
+  # API Domain
+  - host: api.tourism.lk
+    http:
+      paths:
+      # Backend API
+      - path: /
+        pathType: Prefix
+        backend:
+          service:
+            name: tourism-backend
+            port:
+              number: 8000
+  
+  # Main Domain
+  - host: tourism.lk
+    http:
+      paths:
+      # API
+      - path: /api
+        pathType: Prefix
+        backend:
+          service:
+            name: tourism-backend
+            port:
+              number: 8000
+      # GraphQL
+      - path: /graphql
+        pathType: Prefix
+        backend:
+          service:
+            name: tourism-backend
+            port:
+              number: 8000
+      # Health Checks
+      - path: /health
+        pathType: Prefix
+        backend:
+          service:
+            name: tourism-backend
+            port:
+              number: 8000
+
+---
+# API Gateway for advanced routing and rate limiting
+apiVersion: v1
+kind: Service
+metadata:
+  name: tourism-api-gateway
+  namespace: tourism-chatbot
+  labels:
+    app: tourism-api-gateway
+spec:
+  type: LoadBalancer
+  selector:
+    app: tourism-api-gateway
+  ports:
+  - name: http
+    port: 80
+    targetPort: 8080
+  - name: https
+    port: 443
+    targetPort: 8443
+  - name: admin
+    port: 8444
+    targetPort: 8444

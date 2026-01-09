@@ -1,0 +1,489 @@
+
+# Comprehensive Stories for Sri Lanka Tourism Chatbot
+
+version: "3.1"
+
+stories:
+
+# ==================== BASIC CONVERSATION FLOWS ====================
+
+- story: simple greeting
+  steps:
+  - intent: greet
+  - action: utter_greet
+
+- story: greeting and asking about attractions
+  steps:
+  - intent: greet
+  - action: utter_greet
+  - intent: ask_attractions
+  - action: action_search_attractions
+
+- story: goodbye
+  steps:
+  - intent: goodbye
+  - action: utter_goodbye
+
+- story: bot challenge
+  steps:
+  - intent: bot_challenge
+  - action: utter_iamabot
+
+- story: say thanks
+  steps:
+  - intent: thank
+  - action: utter_thank
+
+# ==================== ATTRACTION FLOWS ====================
+
+- story: ask about attractions general
+  steps:
+  - intent: ask_attractions
+  - action: action_search_attractions
+
+- story: ask attractions by category
+  steps:
+  - intent: ask_attractions_by_category
+    entities:
+    - category
+  - action: action_search_attractions
+
+- story: ask specific attraction details
+  steps:
+  - intent: ask_attraction_details
+    entities:
+    - attraction_name
+  - action: action_get_attraction_details
+
+- story: attractions then ask details
+  steps:
+  - intent: ask_attractions
+  - action: action_search_attractions
+  - intent: ask_attraction_details
+    entities:
+    - attraction_name
+  - action: action_get_attraction_details
+
+- story: ask category then location
+  steps:
+  - intent: ask_attractions_by_category
+    entities:
+    - category
+  - action: action_search_attractions
+  - intent: ask_location
+    entities:
+    - location
+  - action: action_get_directions
+
+# ==================== RESTAURANT FLOWS ====================
+
+- story: ask about restaurants
+  steps:
+  - intent: ask_restaurants
+  - action: action_search_restaurants
+
+- story: ask specific restaurant
+  steps:
+  - intent: ask_restaurant_details
+    entities:
+    - restaurant_name
+  - action: action_get_restaurant_details
+
+- story: ask restaurants then details
+  steps:
+  - intent: ask_restaurants
+  - action: action_search_restaurants
+  - intent: ask_restaurant_details
+    entities:
+    - restaurant_name
+  - action: action_get_restaurant_details
+
+- story: ask food then restaurants
+  steps:
+  - intent: ask_food
+  - action: utter_ask_restaurants
+  - intent: ask_restaurants
+  - action: action_search_restaurants
+
+# ==================== HOTEL FLOWS ====================
+
+- story: ask about hotels
+  steps:
+  - intent: ask_hotels
+  - action: action_search_hotels
+
+- story: ask specific hotel
+  steps:
+  - intent: ask_hotel_details
+    entities:
+    - hotel_name
+  - action: action_get_hotel_details
+
+- story: ask hotels with budget
+  steps:
+  - intent: ask_hotels
+  - action: action_search_hotels
+  - intent: ask_budget
+  - action: utter_budget_info
+
+- story: ask hotels in location
+  steps:
+  - intent: ask_hotels
+    entities:
+    - location
+  - action: action_search_hotels
+
+# ==================== TRANSPORT FLOWS ====================
+
+- story: ask about transport
+  steps:
+  - intent: ask_transport
+  - action: utter_ask_transport
+
+- story: ask specific transport route
+  steps:
+  - intent: ask_transport_details
+    entities:
+    - location
+  - action: action_search_transport
+
+- story: ask how to get somewhere
+  steps:
+  - intent: ask_directions
+    entities:
+    - location
+  - action: action_get_directions
+
+- story: ask travel time
+  steps:
+  - intent: ask_travel_time
+    entities:
+    - location
+  - action: action_get_travel_time
+
+- story: ask distance
+  steps:
+  - intent: ask_distance
+    entities:
+    - location
+  - action: action_get_distance
+
+# ==================== EVENTS FLOWS ====================
+
+- story: ask about events
+  steps:
+  - intent: ask_events
+  - action: action_search_events
+
+- story: ask specific event
+  steps:
+  - intent: ask_event_details
+    entities:
+    - event_name
+  - action: action_get_event_details
+
+- story: ask festivals
+  steps:
+  - intent: ask_festivals
+  - action: action_search_events
+
+# ==================== WEATHER & TIMING FLOWS ====================
+
+- story: ask weather
+  steps:
+  - intent: ask_weather
+  - action: action_get_weather
+
+- story: ask weather for location
+  steps:
+  - intent: ask_weather
+    entities:
+    - location
+  - action: action_get_weather
+
+- story: ask best time to visit
+  steps:
+  - intent: ask_best_time_visit
+  - action: utter_weather_info
+
+- story: ask best time for category
+  steps:
+  - intent: ask_best_time_visit
+    entities:
+    - category
+  - action: utter_weather_info
+
+# ==================== FOOD & CUISINE FLOWS ====================
+
+- story: ask about Sri Lankan food
+  steps:
+  - intent: ask_food
+  - action: utter_ask_restaurants
+
+- story: ask about specific dish
+  steps:
+  - intent: ask_local_dishes
+    entities:
+    - dish_name
+  - action: action_get_dish_info
+
+- story: ask dietary restrictions
+  steps:
+  - intent: ask_dietary_restrictions
+  - action: action_search_restaurants
+
+# ==================== EMERGENCY & SAFETY FLOWS ====================
+
+- story: ask emergency
+  steps:
+  - intent: ask_emergency
+  - action: utter_emergency_info
+
+- story: ask specific emergency service
+  steps:
+  - intent: ask_emergency_details
+  - action: action_get_emergency_info
+
+- story: ask safety
+  steps:
+  - intent: ask_safety
+  - action: utter_safety_info
+
+# ==================== CURRENCY & BUDGET FLOWS ====================
+
+- story: ask currency
+  steps:
+  - intent: ask_currency
+  - action: action_get_currency_info
+
+- story: ask budget
+  steps:
+  - intent: ask_budget
+  - action: utter_budget_info
+
+# ==================== CULTURAL FLOWS ====================
+
+- story: ask culture
+  steps:
+  - intent: ask_culture
+  - action: utter_culture_info
+
+- story: ask customs
+  steps:
+  - intent: ask_customs
+  - action: utter_culture_info
+
+- story: ask language help
+  steps:
+  - intent: ask_language_help
+  - action: utter_language_help
+
+# ==================== MULTI-TURN CONVERSATIONS ====================
+
+- story: plan trip - attractions and hotels
+  steps:
+  - intent: greet
+  - action: utter_greet
+  - intent: ask_attractions
+  - action: action_search_attractions
+  - intent: affirm
+  - action: utter_affirm
+  - intent: ask_hotels
+  - action: action_search_hotels
+  - intent: thank
+  - action: utter_thank
+
+- story: complete trip planning
+  steps:
+  - intent: greet
+  - action: utter_greet
+  - intent: ask_attractions_by_category
+    entities:
+    - category
+  - action: action_search_attractions
+  - intent: ask_hotels
+    entities:
+    - location
+  - action: action_search_hotels
+  - intent: ask_restaurants
+  - action: action_search_restaurants
+  - intent: ask_transport_details
+  - action: action_search_transport
+  - intent: thank
+  - action: utter_thank
+  - intent: goodbye
+  - action: utter_goodbye
+
+- story: ask multiple things about same location
+  steps:
+  - intent: ask_attraction_details
+    entities:
+    - attraction_name
+  - action: action_get_attraction_details
+  - intent: ask_directions
+    entities:
+    - location
+  - action: action_get_directions
+  - intent: ask_weather
+    entities:
+    - location
+  - action: action_get_weather
+  - intent: ask_hotels
+    entities:
+    - location
+  - action: action_search_hotels
+
+# ==================== LANGUAGE SWITCHING ====================
+
+- story: change language mid conversation
+  steps:
+  - intent: greet
+  - action: utter_greet
+  - intent: change_language
+    entities:
+    - language
+  - action: action_change_language
+  - intent: ask_attractions
+  - action: action_search_attractions
+
+# ==================== ERROR HANDLING ====================
+
+- story: out of scope
+  steps:
+  - intent: out_of_scope
+  - action: utter_out_of_scope
+
+- story: deny and redirect
+  steps:
+  - intent: ask_attractions
+  - action: action_search_attractions
+  - intent: deny
+  - action: utter_deny
+  - intent: ask_hotels
+  - action: action_search_hotels
+
+- story: unclear intent fallback
+  steps:
+  - intent: chitchat
+  - action: utter_default
+
+# ==================== RECOMMENDATION FLOWS ====================
+
+- story: ask for recommendations
+  steps:
+  - intent: ask_recommendations
+  - action: action_get_recommendations
+
+- story: ask activities
+  steps:
+  - intent: ask_activities
+  - action: action_search_activities
+
+- story: ask family travel
+  steps:
+  - intent: ask_family_travel
+  - action: action_get_family_recommendations
+
+# ==================== BOOKING FLOWS ====================
+
+- story: ask about booking
+  steps:
+  - intent: ask_booking
+  - action: action_provide_booking_info
+
+- story: booking after hotel search
+  steps:
+  - intent: ask_hotels
+  - action: action_search_hotels
+  - intent: ask_hotel_details
+    entities:
+    - hotel_name
+  - action: action_get_hotel_details
+  - intent: ask_booking
+  - action: action_provide_booking_info
+
+# ==================== COMPLEX MULTI-INTENT FLOWS ====================
+
+- story: full tourism consultation
+  steps:
+  - intent: greet
+  - action: utter_greet
+  - intent: ask_best_time_visit
+  - action: utter_weather_info
+  - intent: affirm
+  - action: utter_affirm
+  - intent: ask_visa
+  - action: utter_visa_info
+  - intent: ask_currency
+  - action: action_get_currency_info
+  - intent: ask_attractions
+  - action: action_search_attractions
+  - intent: ask_attraction_details
+    entities:
+    - attraction_name
+  - action: action_get_attraction_details
+  - intent: ask_transport_details
+  - action: action_search_transport
+  - intent: ask_hotels
+  - action: action_search_hotels
+  - intent: thank
+  - action: utter_thank
+  - intent: goodbye
+  - action: utter_goodbye
+
+- story: location based planning
+  steps:
+  - intent: ask_attractions_by_category
+    entities:
+    - category
+    - location
+  - action: action_search_attractions
+  - intent: ask_hotels
+    entities:
+    - location
+  - action: action_search_hotels
+  - intent: ask_restaurants
+    entities:
+    - location
+  - action: action_search_restaurants
+  - intent: ask_weather
+    entities:
+    - location
+  - action: action_get_weather
+
+# ==================== MOOD HANDLING ====================
+
+- story: happy mood
+  steps:
+  - intent: mood_great
+  - action: utter_happy
+
+- story: unhappy mood
+  steps:
+  - intent: mood_unhappy
+  - action: utter_cheer_up
+  - intent: ask_attractions
+  - action: action_search_attractions
+
+# ==================== INTERRUPTED FLOWS ====================
+
+- story: interrupted by emergency
+  steps:
+  - intent: ask_attractions
+  - action: action_search_attractions
+  - intent: ask_emergency
+  - action: utter_emergency_info
+  - intent: thank
+  - action: utter_thank
+
+- story: interrupted by language change
+  steps:
+  - intent: ask_hotels
+  - action: action_search_hotels
+  - intent: change_language
+    entities:
+    - language
+  - action: action_change_language
+  - intent: ask_hotels
+  - action: action_search_hotels
+

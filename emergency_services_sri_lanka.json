@@ -1,0 +1,802 @@
+[
+    {
+        "type": "Embassy",
+        "name_en": "US Embassy",
+        "name_si": "ඇමරිකානු තානාපති කාර්යාලය",
+        "location": "210, Galle Road, Colombo 03",
+        "phone": "+94 11 249 8500",
+        "description": "Diplomatic mission of the United States in Sri Lanka."
+    },
+    {
+        "type": "Embassy",
+        "name_en": "British High Commission",
+        "name_si": "බ්‍රිතාන්‍ය මහ කොමසාරිස් කාර්යාලය",
+        "location": "389 Bauddhaloka Mawatha, Colombo 07",
+        "phone": "+94 11 5390639",
+        "description": "Diplomatic mission of the United Kingdom in Sri Lanka."
+    },
+    {
+        "type": "Embassy",
+        "name_en": "Indian High Commission",
+        "name_si": "ඉන්දියානු මහ කොමසාරිස් කාර්යාලය",
+        "location": "36-38, Galle Road, Colombo 03",
+        "phone": "+94 11 2327587",
+        "description": "Diplomatic mission of India in Sri Lanka."
+    },
+    {
+        "type": "Embassy",
+        "name_en": "Australian High Commission",
+        "name_si": "ඕස්ට්‍රේලියානු මහ කොමසාරිස් කාර්යාලය",
+        "location": "No. 21, Srimath RG Senanayake Mawatha, Colombo 7",
+        "phone": "+94 11 246 3200",
+        "description": "Diplomatic mission of Australia in Sri Lanka."
+    },
+    {
+        "type": "Embassy",
+        "name_en": "Chinese Embassy",
+        "name_si": "චීන තානාපති කාර්යාලය",
+        "location": "381A, Bauddhaloka Mawatha, Colombo 7",
+        "phone": "+94 11 2688610",
+        "description": "Diplomatic mission of China in Sri Lanka."
+    },
+    {
+        "type": "Embassy",
+        "name_en": "Japanese Embassy",
+        "name_si": "ජපාන තානාපති කාර්යාලය",
+        "location": "No.20, Srimath RG Senanayake Mawatha, Colombo 7",
+        "phone": "+94 11 2693831",
+        "description": "Diplomatic mission of Japan in Sri Lanka."
+    },
+    {
+        "type": "Embassy",
+        "name_en": "French Embassy",
+        "name_si": "ප්‍රංශ තානාපති කාර්යාලය",
+        "location": "89, Rosmead Place, Colombo 7",
+        "phone": "+94 11 2639 400",
+        "description": "Diplomatic mission of France in Sri Lanka."
+    },
+    {
+        "type": "Embassy",
+        "name_en": "German Embassy",
+        "name_si": "ජර්මානු තානාපති කාර්යාලය",
+        "location": "40 Alfred House Avenue, Colombo 3",
+        "phone": "+94 11 258 04 31",
+        "description": "Diplomatic mission of Germany in Sri Lanka."
+    },
+    {
+        "type": "Embassy",
+        "name_en": "Russian Embassy",
+        "name_si": "රුසියානු තානාපති කාර්යාලය",
+        "location": "62, Sir Ernest de Silva Mawatha, Colombo 07",
+        "phone": "+94 11 257 3555",
+        "description": "Diplomatic mission of Russia in Sri Lanka."
+    },
+    {
+        "type": "Embassy",
+        "name_en": "Canadian High Commission",
+        "name_si": "කැනේඩියානු මහ කොමසාරිස් කාර්යාලය",
+        "location": "33A, 5th Lane, Colpetty, Colombo 03",
+        "phone": "+94 11 522 62 32",
+        "description": "Diplomatic mission of Canada in Sri Lanka."
+    },
+    {
+        "type": "Embassy",
+        "name_en": "Italian Embassy",
+        "name_si": "ඉතාලි තානාපති කාර්යාලය",
+        "location": "55, Jawatta Road, Colombo 05",
+        "phone": "+94 11 2588388",
+        "description": "Diplomatic mission of Italy in Sri Lanka."
+    },
+    {
+        "type": "Embassy",
+        "name_en": "Malaysian High Commission",
+        "name_si": "මැලේසියානු මහ කොමසාරිස් කාර්යාලය",
+        "location": "No. 45, Rosmead Place, Colombo 07",
+        "phone": "+94 11 755 7711",
+        "description": "Diplomatic mission of Malaysia in Sri Lanka."
+    },
+    {
+        "type": "Embassy",
+        "name_en": "Maldives High Commission",
+        "name_si": "මාලදිවයින් මහ කොමසාරිස් කාර්යාලය",
+        "location": "23, Kaviratne Place, Colombo 06",
+        "phone": "+94 11 551 6302",
+        "description": "Diplomatic mission of Maldives in Sri Lanka."
+    },
+    {
+        "type": "Embassy",
+        "name_en": "Singapore High Commission",
+        "name_si": "සිංගප්පූරු මහ කොමසාරිස් කාර්යාලය",
+        "location": "40, Gower Street, Colombo 05",
+        "phone": "+94 11 557 7300",
+        "description": "Diplomatic mission of Singapore in Sri Lanka."
+    },
+    {
+        "type": "Embassy",
+        "name_en": "Swiss Embassy",
+        "name_si": "ස්විට්සර්ලන්ත තානාපති කාර්යාලය",
+        "location": "63, Srimath RG Senanayake Mawatha, Colombo 07",
+        "phone": "+94 11 269 5151",
+        "description": "Diplomatic mission of Switzerland in Sri Lanka."
+    },
+    {
+        "type": "Embassy",
+        "name_en": "South African High Commission",
+        "name_si": "දකුණු අප්‍රිකානු මහ කොමසාරිස් කාර්යාලය",
+        "location": "114 Rosmead Place, Colombo 07",
+        "phone": "+94 11 246 3000",
+        "description": "Diplomatic mission of South Africa in Sri Lanka."
+    },
+    {
+        "type": "Embassy",
+        "name_en": "Netherlands Embassy",
+        "name_si": "නෙදර්ලන්ත තානාපති කාර්යාලය",
+        "location": "25 Torrington Avenue, Colombo 7",
+        "phone": "+94 11 2510200",
+        "description": "Diplomatic mission of the Netherlands in Sri Lanka."
+    },
+    {
+        "type": "Embassy",
+        "name_en": "Pakistan High Commission",
+        "name_si": "පකිස්ථානු මහ කොමසාරිස් කාර්යාලය",
+        "location": "42, Bullers Lane, Colombo 07",
+        "phone": "+94 11 269 6301",
+        "description": "Diplomatic mission of Pakistan in Sri Lanka."
+    },
+    {
+        "type": "Embassy",
+        "name_en": "Saudi Arabian Embassy",
+        "name_si": "සෞදි අරාබි තානාපති කාර්යාලය",
+        "location": "43, Horton Place, Colombo 07",
+        "phone": "+94 11 268 2087",
+        "description": "Diplomatic mission of Saudi Arabia in Sri Lanka."
+    },
+    {
+        "type": "Embassy",
+        "name_en": "South Korean Embassy",
+        "name_si": "දකුණු කොරියානු තානාපති කාර්යාලය",
+        "location": "98, Dharmapala Mawatha, Colombo 07",
+        "phone": "+94 11 246 4830",
+        "description": "Diplomatic mission of South Korea in Sri Lanka."
+    },
+    {
+        "type": "Hospital",
+        "name_en": "National Hospital of Sri Lanka",
+        "name_si": "ශ්‍රී ලංකා ජාතික රෝහල",
+        "location": "Colombo 10",
+        "phone": "+94 11 269 1111",
+        "description": "Main public hospital in Sri Lanka providing 24/7 emergency services."
+    },
+    {
+        "type": "Hospital",
+        "name_en": "National Hospital - Kandy",
+        "name_si": "මහනුවර ජාතික රෝහල",
+        "location": "Sangaraja Mawatha, Kandy",
+        "phone": "+94 81 223 3337",
+        "description": "Primary public hospital in the Central Province."
+    },
+    {
+        "type": "Hospital",
+        "name_en": "Lady Ridgway Hospital",
+        "name_si": "රිජ්වේ ආර්යාව ළමා රෝහල",
+        "location": "Colombo 08",
+        "phone": "+94 11 269 3711",
+        "description": "Specialized public hospital for children."
+    },
+    {
+        "type": "Hospital",
+        "name_en": "Lanka Hospitals",
+        "name_si": "ලංකා හොස්පිට්ල්ස්",
+        "location": "578 Elvitigala Mawatha, Colombo 05",
+        "phone": "+94 11 553 0000",
+        "description": "Leading private hospital with 24/7 emergency care."
+    },
+    {
+        "type": "Hospital",
+        "name_en": "Nawaloka Hospital",
+        "name_si": "නවලෝක රෝහල",
+        "location": "Colombo 02",
+        "phone": "+94 11 557 7111",
+        "description": "Major private hospital in Colombo."
+    },
+    {
+        "type": "Hospital",
+        "name_en": "Durdans Hospital",
+        "name_si": "ඩර්ඩන්ස් රෝහල",
+        "location": "Colombo 03",
+        "phone": "+94 11 214 0000",
+        "description": "Renowned private hospital with emergency services."
+    },
+    {
+        "type": "Hospital",
+        "name_en": "Asiri Surgical Hospital",
+        "name_si": "ආසිරි ශල්‍ය රෝහල",
+        "location": "Colombo 05",
+        "phone": "+94 11 452 4400",
+        "description": "Private hospital specializing in surgical care."
+    },
+    {
+        "type": "Hospital",
+        "name_en": "Teaching Hospital Karapitiya",
+        "name_si": "කරාපිටිය ශික්ෂණ රෝහල",
+        "location": "Galle",
+        "phone": "+94 91 223 2250",
+        "description": "Major public teaching hospital in the Southern Province."
+    },
+    {
+        "type": "Hospital",
+        "name_en": "Teaching Hospital Jaffna",
+        "name_si": "යාපනය ශික්ෂණ රෝහල",
+        "location": "Jaffna",
+        "phone": "+94 21 222 2261",
+        "description": "Primary public hospital in the Northern Province."
+    },
+    {
+        "type": "Hospital",
+        "name_en": "Teaching Hospital Anuradhapura",
+        "name_si": "අනුරාධපුර ශික්ෂණ රෝහල",
+        "location": "Anuradhapura",
+        "phone": "+94 25 222 2261",
+        "description": "Major public hospital in the North Central Province."
+    },
+    {
+        "type": "Hospital",
+        "name_en": "Teaching Hospital Peradeniya",
+        "name_si": "පේරාදෙණිය ශික්ෂණ රෝහල",
+        "location": "Peradeniya",
+        "phone": "+94 81 238 8001",
+        "description": "Public teaching hospital in Peradeniya."
+    },
+    {
+        "type": "Hospital",
+        "name_en": "Base Hospital Puttalam",
+        "name_si": "පුත්තලම මූලික රෝහල",
+        "location": "Puttalam",
+        "phone": "+94 32 226 5261",
+        "description": "Public hospital in Puttalam."
+    },
+    {
+        "type": "Hospital",
+        "name_en": "General Hospital Matara",
+        "name_si": "මාතර මහ රෝහල",
+        "location": "Matara",
+        "phone": "+94 41 222 2261",
+        "description": "Public hospital in Matara."
+    },
+    {
+        "type": "Hospital",
+        "name_en": "Hemas Hospital - Wattala",
+        "name_si": "හේමාස් රෝහල - වත්තල",
+        "location": "Wattala",
+        "phone": "+94 11 788 8888",
+        "description": "Private hospital in Wattala."
+    },
+    {
+        "type": "Hospital",
+        "name_en": "Ninewells Hospital",
+        "name_si": "නයින්වෙල්ස් රෝහල",
+        "location": "Colombo 05",
+        "phone": "+94 11 204 9999",
+        "description": "Private hospital specializing in women and children."
+    },
+    {
+        "type": "Hospital",
+        "name_en": "Base Hospital Homagama",
+        "name_si": "හෝමාගම මූලික රෝහල",
+        "location": "Homagama",
+        "phone": "+94 11 285 5222",
+        "description": "Public hospital in Homagama."
+    },
+    {
+        "type": "Hospital",
+        "name_en": "Base Hospital Kalawanchikudi",
+        "name_si": "කලවංචිකුඩි මූලික රෝහල",
+        "location": "Kalawanchikudi",
+        "phone": "+94 65 225 0261",
+        "description": "Public hospital in Kalawanchikudi."
+    },
+    {
+        "type": "Hospital",
+        "name_en": "District General Hospital Nawalapitiya",
+        "name_si": "නාවලපිටිය දිස්ත්‍රික් මහ රෝහල",
+        "location": "Nawalapitiya",
+        "phone": "+94 54 222 2261",
+        "description": "Public hospital in Nawalapitiya."
+    },
+    {
+        "type": "Hospital",
+        "name_en": "Base Hospital Gampola",
+        "name_si": "ගම්පොල මූලික රෝහල",
+        "location": "Gampola",
+        "phone": "+94 81 235 2261",
+        "description": "Public hospital in Gampola."
+    },
+    {
+        "type": "Hospital",
+        "name_en": "District General Hospital Matale",
+        "name_si": "මාතලේ දිස්ත්‍රික් මහ රෝහල",
+        "location": "Matale",
+        "phone": "+94 66 222 2261",
+        "description": "Public hospital in Matale."
+    },
+    {
+        "type": "Hospital",
+        "name_en": "Base Hospital Balapitiya",
+        "name_si": "බලපිටිය මූලික රෝහල",
+        "location": "Balapitiya",
+        "phone": "+94 91 392 7276",
+        "description": "Public hospital in Balapitiya."
+    },
+    {
+        "type": "Hospital",
+        "name_en": "Base Hospital Elpitiya",
+        "name_si": "ඇල්පිටිය මූලික රෝහල",
+        "location": "Elpitiya",
+        "phone": "+94 91 392 7274",
+        "description": "Public hospital in Elpitiya."
+    },
+    {
+        "type": "Hospital",
+        "name_en": "Base Hospital Udugama",
+        "name_si": "උඩුගම මූලික රෝහල",
+        "location": "Udugama",
+        "phone": "+94 91 392 7278",
+        "description": "Public hospital in Udugama."
+    },
+    {
+        "type": "Hospital",
+        "name_en": "National Cancer Institute",
+        "name_si": "ජාතික පිළිකා ආයතනය",
+        "location": "Maharagama",
+        "phone": "+94 11 285 0252",
+        "description": "Specialized public hospital for cancer treatment."
+    },
+    {
+        "type": "Hospital",
+        "name_en": "National Eye Hospital",
+        "name_si": "ජාතික ඇස් රෝහල",
+        "location": "Colombo 10",
+        "phone": "+94 11 269 3911",
+        "description": "Specialized public hospital for eye care."
+    },
+    {
+        "type": "Hospital",
+        "name_en": "Castle Street Hospital for Women",
+        "name_si": "කාසල් වීදිය කාන්තා රෝහල",
+        "location": "Colombo 08",
+        "phone": "+94 11 269 6231",
+        "description": "Specialized public hospital for women."
+    },
+    {
+        "type": "Hospital",
+        "name_en": "De Soysa Hospital for Women",
+        "name_si": "ද සොයිසා කාන්තා රෝහල",
+        "location": "Colombo 10",
+        "phone": "+94 11 269 6231",
+        "description": "Specialized public hospital for women."
+    },
+    {
+        "type": "Hospital",
+        "name_en": "Sulaiman Hospital",
+        "name_si": "සුලෙයිමාන් රෝහල",
+        "location": "Colombo 14",
+        "phone": "+94 11 232 2413",
+        "description": "Private hospital in Grandpass."
+    },
+    {
+        "type": "Hospital",
+        "name_en": "Kings Hospital",
+        "name_si": "කින්ග්ස් රෝහල",
+        "location": "Colombo 05",
+        "phone": "+94 11 774 3743",
+        "description": "Private hospital in Narahenpita."
+    },
+    {
+        "type": "Hospital",
+        "name_en": "Park Hospital",
+        "name_si": "පාර්ක් රෝහල",
+        "location": "Colombo 05",
+        "phone": "+94 11 259 0200",
+        "description": "Private hospital in Park Road."
+    },
+    {
+        "type": "Police",
+        "name_en": "Police Emergency",
+        "name_si": "පොලිස් හදිසි ඇමතුම්",
+        "location": "Island-wide",
+        "phone": "119 / 118",
+        "description": "National police emergency hotline available 24/7."
+    },
+    {
+        "type": "Police",
+        "name_en": "Tourist Police HQ",
+        "name_si": "සංචාරක පොලිස් මූලස්ථානය",
+        "location": "Colombo 03",
+        "phone": "+94 11 242 1052",
+        "description": "Dedicated police unit for tourist assistance."
+    },
+    {
+        "type": "Police",
+        "name_en": "Tourist Police - Kandy",
+        "name_si": "සංචාරක පොලිසිය - මහනුවර",
+        "location": "Kandy",
+        "phone": "+94 81 222 2222",
+        "description": "Tourist police unit in Kandy."
+    },
+    {
+        "type": "Police",
+        "name_en": "Bambalapitiya Police Station",
+        "name_si": "බම්බලපිටිය පොලිස් ස්ථානය",
+        "location": "Colombo 04",
+        "phone": "+94 11 258 8680",
+        "description": "Local police station in Bambalapitiya."
+    },
+    {
+        "type": "Police",
+        "name_en": "Fort Police Station",
+        "name_si": "කොටුව පොලිස් ස්ථානය",
+        "location": "Colombo 01",
+        "phone": "+94 11 243 2635",
+        "description": "Police station serving the Colombo Fort area."
+    },
+    {
+        "type": "Police",
+        "name_en": "Galle Police Station",
+        "name_si": "ගාල්ල පොලිස් ස්ථානය",
+        "location": "Galle",
+        "phone": "+94 91 223 2222",
+        "description": "Main police station in Galle."
+    },
+    {
+        "type": "Police",
+        "name_en": "Jaffna Police Station",
+        "name_si": "යාපනය පොලිස් ස්ථානය",
+        "location": "Jaffna",
+        "phone": "+94 21 222 2222",
+        "description": "Main police station in Jaffna."
+    },
+    {
+        "type": "Police",
+        "name_en": "Negombo Police Station",
+        "name_si": "මීගමුව පොලිස් ස්ථානය",
+        "location": "Negombo",
+        "phone": "+94 31 222 2222",
+        "description": "Main police station in Negombo."
+    },
+    {
+        "type": "Police",
+        "name_en": "Nuwara Eliya Police Station",
+        "name_si": "නුවරඑළිය පොලිස් ස්ථානය",
+        "location": "Nuwara Eliya",
+        "phone": "+94 52 222 2222",
+        "description": "Main police station in Nuwara Eliya."
+    },
+    {
+        "type": "Police",
+        "name_en": "Anuradhapura Police Station",
+        "name_si": "අනුරාධපුර පොලිස් ස්ථානය",
+        "location": "Anuradhapura",
+        "phone": "+94 25 222 2222",
+        "description": "Main police station in Anuradhapura."
+    },
+    {
+        "type": "Police",
+        "name_en": "Maradana Police Station",
+        "name_si": "මරදාන පොලිස් ස්ථානය",
+        "location": "Colombo 10",
+        "phone": "+94 11 269 2888",
+        "description": "Police station in Maradana."
+    },
+    {
+        "type": "Police",
+        "name_en": "Pettah Police Station",
+        "name_si": "පිටකොටුව පොලිස් ස්ථානය",
+        "location": "Colombo 11",
+        "phone": "+94 11 232 3677",
+        "description": "Police station in Pettah."
+    },
+    {
+        "type": "Police",
+        "name_en": "Slave Island Police Station",
+        "name_si": "කොම්පඤඤ වීදිය පොලිස් ස්ථානය",
+        "location": "Colombo 02",
+        "phone": "+94 11 238 4382",
+        "description": "Police station in Slave Island."
+    },
+    {
+        "type": "Police",
+        "name_en": "Matara Police Station",
+        "name_si": "මාතර පොලිස් ස්ථානය",
+        "location": "Matara",
+        "phone": "+94 41 222 2222",
+        "description": "Main police station in Matara."
+    },
+    {
+        "type": "Police",
+        "name_en": "Ratnapura Police Station",
+        "name_si": "රත්නපුර පොලිස් ස්ථානය",
+        "location": "Ratnapura",
+        "phone": "+94 45 222 2222",
+        "description": "Main police station in Ratnapura."
+    },
+    {
+        "type": "Police",
+        "name_en": "Trincomalee Police Station",
+        "name_si": "ත්‍රිකුණාමලය පොලිස් ස්ථානය",
+        "location": "Trincomalee",
+        "phone": "+94 26 222 2222",
+        "description": "Main police station in Trincomalee."
+    },
+    {
+        "type": "Police",
+        "name_en": "Batticaloa Police Station",
+        "name_si": "මඩකලපුව පොලිස් ස්ථානය",
+        "location": "Batticaloa",
+        "phone": "+94 65 222 2222",
+        "description": "Main police station in Batticaloa."
+    },
+    {
+        "type": "Police",
+        "name_en": "Badulla Police Station",
+        "name_si": "බදුල්ල පොලිස් ස්ථානය",
+        "location": "Badulla",
+        "phone": "+94 55 222 2222",
+        "description": "Main police station in Badulla."
+    },
+    {
+        "type": "Police",
+        "name_en": "Kurunegala Police Station",
+        "name_si": "කුරුණෑගල පොලිස් ස්ථානය",
+        "location": "Kurunegala",
+        "phone": "+94 37 222 2222",
+        "description": "Main police station in Kurunegala."
+    },
+    {
+        "type": "Police",
+        "name_en": "Kalutara Police Station",
+        "name_si": "කළුතර පොලිස් ස්ථානය",
+        "location": "Kalutara",
+        "phone": "+94 34 222 2222",
+        "description": "Main police station in Kalutara."
+    },
+    {
+        "type": "Police",
+        "name_en": "Achchuweli Police Station",
+        "name_si": "අච්චුවේලි පොලිස් ස්ථානය",
+        "location": "Achchuweli",
+        "phone": "+94 21 205 8585",
+        "description": "Local police station in Achchuweli."
+    },
+    {
+        "type": "Police",
+        "name_en": "Agalawaththa Police Station",
+        "name_si": "අගලවත්ත පොලිස් ස්ථානය",
+        "location": "Agalawaththa",
+        "phone": "+94 34 224 8855",
+        "description": "Local police station in Agalawaththa."
+    },
+    {
+        "type": "Police",
+        "name_en": "Agarapathana Police Station",
+        "name_si": "අගරපතන පොලිස් ස්ථානය",
+        "location": "Agarapathana",
+        "phone": "+94 51 223 0222",
+        "description": "Local police station in Agarapathana."
+    },
+    {
+        "type": "Police",
+        "name_en": "Agbopura Police Station",
+        "name_si": "අග්බෝපුර පොලිස් ස්ථානය",
+        "location": "Agbopura",
+        "phone": "+94 26 224 4111",
+        "description": "Local police station in Agbopura."
+    },
+    {
+        "type": "Police",
+        "name_en": "Ahangama Police Station",
+        "name_si": "අහංගම පොලිස් ස්ථානය",
+        "location": "Ahangama",
+        "phone": "+94 91 228 3222",
+        "description": "Local police station in Ahangama."
+    },
+    {
+        "type": "Police",
+        "name_en": "Ahungalla Police Station",
+        "name_si": "අහුන්ගල්ල පොලිස් ස්ථානය",
+        "location": "Ahungalla",
+        "phone": "+94 91 226 4026",
+        "description": "Local police station in Ahungalla."
+    },
+    {
+        "type": "Police",
+        "name_en": "Akkaraipattu Police Station",
+        "name_si": "අක්කරපත්තුව පොලිස් ස්ථානය",
+        "location": "Akkaraipattu",
+        "phone": "+94 67 227 7222",
+        "description": "Local police station in Akkaraipattu."
+    },
+    {
+        "type": "Police",
+        "name_en": "Akmeemana Police Station",
+        "name_si": "අක්මීමන පොලිස් ස්ථානය",
+        "location": "Akmeemana",
+        "phone": "+94 91 223 4223",
+        "description": "Local police station in Akmeemana."
+    },
+    {
+        "type": "Police",
+        "name_en": "Akuressa Police Station",
+        "name_si": "අකුරැස්ස පොලිස් ස්ථානය",
+        "location": "Akuressa",
+        "phone": "+94 41 228 3222",
+        "description": "Local police station in Akuressa."
+    },
+    {
+        "type": "Police",
+        "name_en": "Alawwa Police Station",
+        "name_si": "අලව්ව පොලිස් ස්ථානය",
+        "location": "Alawwa",
+        "phone": "+94 37 227 8122",
+        "description": "Local police station in Alawwa."
+    },
+    {
+        "type": "Fire",
+        "name_en": "Fire & Rescue",
+        "name_si": "ගිනි නිවන ඒකකය",
+        "location": "Island-wide",
+        "phone": "110",
+        "description": "National fire and rescue emergency hotline."
+    },
+    {
+        "type": "Fire",
+        "name_en": "Colombo Fire Brigade",
+        "name_si": "කොළඹ ගිනි නිවන හමුදාව",
+        "location": "Colombo 10",
+        "phone": "+94 11 242 2222",
+        "description": "Main fire station for the Colombo Municipal Council area."
+    },
+    {
+        "type": "Fire",
+        "name_en": "Kandy Fire Brigade",
+        "name_si": "මහනුවර ගිනි නිවන හමුදාව",
+        "location": "Kandy",
+        "phone": "+94 81 222 2222",
+        "description": "Fire station serving the Kandy area."
+    },
+    {
+        "type": "Fire",
+        "name_en": "Galle Fire Brigade",
+        "name_si": "ගාල්ල ගිනි නිවන හමුදාව",
+        "location": "Galle",
+        "phone": "+94 91 223 2222",
+        "description": "Fire station serving the Galle area."
+    },
+    {
+        "type": "Fire",
+        "name_en": "Negombo Fire Brigade",
+        "name_si": "මීගමුව ගිනි නිවන හමුදාව",
+        "location": "Negombo",
+        "phone": "+94 31 223 3222",
+        "description": "Fire station serving the Negombo area."
+    },
+    {
+        "type": "Fire",
+        "name_en": "Kurunegala Fire Brigade",
+        "name_si": "කුරුණෑගල ගිනි නිවන හමුදාව",
+        "location": "Kurunegala",
+        "phone": "+94 37 222 2222",
+        "description": "Fire station serving the Kurunegala area."
+    },
+    {
+        "type": "Fire",
+        "name_en": "Jaffna Fire Brigade",
+        "name_si": "යාපනය ගිනි නිවන හමුදාව",
+        "location": "Jaffna",
+        "phone": "+94 21 222 2222",
+        "description": "Fire station serving the Jaffna area."
+    },
+    {
+        "type": "Fire",
+        "name_en": "Batticaloa Fire Brigade",
+        "name_si": "මඩකලපුව ගිනි නිවන හමුදාව",
+        "location": "Batticaloa",
+        "phone": "+94 65 222 2222",
+        "description": "Fire station serving the Batticaloa area."
+    },
+    {
+        "type": "Fire",
+        "name_en": "Gampaha Fire Brigade",
+        "name_si": "ගම්පහ ගිනි නිවන හමුදාව",
+        "location": "Gampaha",
+        "phone": "+94 33 222 2222",
+        "description": "Fire station serving the Gampaha area."
+    },
+    {
+        "type": "Fire",
+        "name_en": "Nuwara Eliya Fire Unit",
+        "name_si": "නුවරඑළිය ගිනි නිවන ඒකකය",
+        "location": "Nuwara Eliya",
+        "phone": "+94 52 222 2222",
+        "description": "Fire station serving the Nuwara Eliya area."
+    },
+    {
+        "type": "Fire",
+        "name_en": "Moratuwa Fire Brigade",
+        "name_si": "මොරටුව ගිනි නිවන හමුදාව",
+        "location": "Moratuwa",
+        "phone": "+94 11 264 5361",
+        "description": "Fire station serving the Moratuwa area."
+    },
+    {
+        "type": "Fire",
+        "name_en": "Dehiwala Fire Brigade",
+        "name_si": "දෙහිවල ගිනි නිවන හමුදාව",
+        "location": "Dehiwala",
+        "phone": "+94 11 271 2222",
+        "description": "Fire station serving the Dehiwala-Mount Lavinia area."
+    },
+    {
+        "type": "Fire",
+        "name_en": "Chilaw Fire Brigade",
+        "name_si": "හලාවත ගිනි නිවන හමුදාව",
+        "location": "Chilaw",
+        "phone": "+94 32 222 2222",
+        "description": "Fire station serving the Chilaw area."
+    },
+    {
+        "type": "Fire",
+        "name_en": "Matara Fire Brigade",
+        "name_si": "මාතර ගිනි නිවන හමුදාව",
+        "location": "Matara",
+        "phone": "+94 41 222 2222",
+        "description": "Fire station serving the Matara area."
+    },
+    {
+        "type": "Fire",
+        "name_en": "Ratnapura Fire Brigade",
+        "name_si": "රත්නපුර ගිනි නිවන හමුදාව",
+        "location": "Ratnapura",
+        "phone": "+94 45 222 2222",
+        "description": "Fire station serving the Ratnapura area."
+    },
+    {
+        "type": "Fire",
+        "name_en": "Trincomalee Fire Brigade",
+        "name_si": "ත්‍රිකුණාමලය ගිනි නිවන හමුදාව",
+        "location": "Trincomalee",
+        "phone": "+94 26 222 2222",
+        "description": "Fire station serving the Trincomalee area."
+    },
+    {
+        "type": "Fire",
+        "name_en": "Anuradhapura Fire Brigade",
+        "name_si": "අනුරාධපුර ගිනි නිවන හමුදාව",
+        "location": "Anuradhapura",
+        "phone": "+94 25 222 2222",
+        "description": "Fire station serving the Anuradhapura area."
+    },
+    {
+        "type": "Fire",
+        "name_en": "Kalutara Fire Brigade",
+        "name_si": "කළුතර ගිනි නිවන හමුදාව",
+        "location": "Kalutara",
+        "phone": "+94 34 222 2222",
+        "description": "Fire station serving the Kalutara area."
+    },
+    {
+        "type": "Fire",
+        "name_en": "Badulla Fire Brigade",
+        "name_si": "බදුල්ල ගිනි නිවන හමුදාව",
+        "location": "Badulla",
+        "phone": "+94 55 222 2222",
+        "description": "Fire station serving the Badulla area."
+    },
+    {
+        "type": "Fire",
+        "name_en": "Vavuniya Fire Brigade",
+        "name_si": "වවුනියාව ගිනි නිවන හමුදාව",
+        "location": "Vavuniya",
+        "phone": "+94 24 222 2222",
+        "description": "Fire station serving the Vavuniya area."
+    }
+]

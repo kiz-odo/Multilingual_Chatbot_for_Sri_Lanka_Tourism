@@ -1,0 +1,282 @@
+# Stories for Sri Lanka Tourism Multilingual Chatbot
+
+version: "3.1"
+
+stories:
+
+# Basic Greeting Flow
+- story: greet and ask about attractions
+  steps:
+  - intent: greet
+  - action: utter_greet
+  - intent: ask_attractions
+  - action: utter_ask_attractions
+
+# Greeting with Language Detection - Use default greet then language-specific follow-ups
+- story: greet with sinhala language
+  steps:
+  - intent: greet
+    entities:
+    - language: "si"
+  - action: utter_greet
+  - slot_was_set:
+    - user_language: "si"
+  - intent: ask_attractions
+  - action: action_search_attractions
+
+- story: greet with tamil language
+  steps:
+  - intent: greet
+    entities:
+    - language: "ta"
+  - action: utter_greet
+  - slot_was_set:
+    - user_language: "ta"
+  - intent: ask_attractions
+  - action: action_search_attractions
+
+# Attraction Information Flow
+- story: ask about specific attraction category
+  steps:
+  - intent: ask_attractions_by_category
+    entities:
+    - category: "historical"
+  - action: action_search_attractions
+  - intent: ask_attraction_details
+    entities:
+    - attraction_name: "Sigiriya"
+  - action: action_search_attractions
+
+- story: ask about beaches
+  steps:
+  - intent: ask_attractions_by_category
+    entities:
+    - category: "beaches"
+  - action: action_search_attractions
+  - intent: thank
+  - action: utter_thank
+
+# Restaurant Information Flow
+- story: restaurant search flow
+  steps:
+  - intent: ask_restaurants
+  - action: utter_ask_restaurants
+  - intent: ask_restaurant_details
+    entities:
+    - restaurant_name: "Ministry of Crab"
+  - action: action_search_restaurants
+  - intent: affirm
+  - action: utter_affirm
+
+# Hotel Information Flow
+- story: hotel search flow
+  steps:
+  - intent: ask_hotels
+  - action: utter_ask_hotels
+  - intent: ask_hotel_details
+    entities:
+    - hotel_name: "Galle Face Hotel"
+  - action: action_search_hotels
+
+# Transport Information Flow
+- story: transport inquiry
+  steps:
+  - intent: ask_transport
+  - action: utter_ask_transport
+  - intent: ask_transport_details
+    entities:
+    - transport_type: "train"
+    - location: "Kandy"
+  - action: action_search_transport
+
+# Food and Culture Flow
+- story: food inquiry
+  steps:
+  - intent: ask_food
+  - action: utter_ask_restaurants
+  - intent: ask_local_dishes
+  - action: action_search_restaurants
+  - intent: thank
+  - action: utter_thank
+
+# Weather Information Flow
+- story: weather inquiry
+  steps:
+  - intent: ask_weather
+  - action: utter_weather_info
+  - intent: ask_best_time_visit
+  - action: utter_weather_info
+
+# Emergency Information Flow
+- story: emergency help
+  steps:
+  - intent: ask_emergency
+  - action: utter_emergency_info
+  - intent: thank
+  - action: utter_thank
+
+# Cultural Information Flow
+- story: culture inquiry
+  steps:
+  - intent: ask_culture
+  - action: utter_culture_info
+  - intent: ask_festivals
+  - action: utter_culture_info
+  - intent: ask_language_help
+  - action: utter_language_help
+
+# Language Change Flow
+- story: change language
+  steps:
+  - intent: change_language
+    entities:
+    - language: "sinhala"
+  - action: action_change_language
+  - intent: ask_attractions
+  - action: action_search_attractions
+
+# Comprehensive Tourism Planning
+- story: comprehensive tourism planning
+  steps:
+  - intent: greet
+  - action: utter_greet
+  - intent: ask_attractions
+  - action: utter_ask_attractions
+  - intent: ask_attractions_by_category
+    entities:
+    - category: "historical"
+  - action: action_search_attractions
+  - intent: ask_restaurants
+  - action: utter_ask_restaurants
+  - intent: ask_hotels
+  - action: utter_ask_hotels
+  - intent: ask_transport
+  - action: utter_ask_transport
+  - intent: thank
+  - action: utter_thank
+  - intent: goodbye
+  - action: utter_goodbye
+
+# Fallback Handling
+- story: fallback flow
+  steps:
+  - intent: out_of_scope
+  - action: utter_out_of_scope
+  - intent: ask_attractions
+  - action: utter_ask_attractions
+
+# Bot Challenge
+- story: bot challenge
+  steps:
+  - intent: bot_challenge
+  - action: utter_iamabot
+  - intent: ask_attractions
+  - action: utter_ask_attractions
+
+# Unhappy Path - Clarification
+- story: user needs help
+  steps:
+  - intent: chitchat
+  - action: utter_default
+  - intent: ask_attractions
+  - action: utter_ask_attractions
+
+# Multi-turn Attraction Search
+- story: detailed attraction search
+  steps:
+  - intent: ask_attractions
+  - action: utter_ask_attractions
+  - intent: ask_attractions_by_category
+    entities:
+    - category: "temples"
+  - action: action_search_attractions
+  - intent: ask_attraction_details
+    entities:
+    - attraction_name: "Temple of the Tooth"
+  - action: action_search_attractions
+  - intent: ask_directions
+    entities:
+    - location: "Kandy"
+  - action: action_get_directions
+
+# Food and Dietary Restrictions
+- story: food with dietary restrictions
+  steps:
+  - intent: ask_restaurants
+  - action: utter_ask_restaurants
+  - intent: ask_dietary_restrictions
+  - action: action_search_restaurants
+  - intent: affirm
+  - action: utter_affirm
+
+# Complete Travel Planning Session
+- story: complete travel planning
+  steps:
+  - intent: greet
+  - action: utter_greet
+  - intent: ask_best_time_visit
+  - action: utter_weather_info
+  - intent: ask_attractions
+  - action: utter_ask_attractions
+  - intent: ask_attractions_by_category
+    entities:
+    - category: "beaches"
+  - action: action_search_attractions
+  - intent: ask_hotels
+  - action: utter_ask_hotels
+  - intent: ask_restaurants
+  - action: utter_ask_restaurants
+  - intent: ask_transport
+  - action: utter_ask_transport
+  - intent: ask_culture
+  - action: utter_culture_info
+  - intent: thank
+  - action: utter_thank
+  - intent: goodbye
+  - action: utter_goodbye
+
+# Error Recovery
+- story: user confused
+  steps:
+  - intent: deny
+  - action: utter_deny
+  - intent: ask_attractions
+  - action: utter_ask_attractions
+
+# Quick Information Requests
+- story: quick emergency info
+  steps:
+  - intent: ask_emergency
+  - action: utter_emergency_info
+  - intent: goodbye
+  - action: utter_goodbye
+
+- story: quick weather info
+  steps:
+  - intent: ask_weather
+  - action: utter_weather_info
+  - intent: goodbye
+  - action: utter_goodbye
+
+# Multilingual Interactions - Using consistent greeting
+- story: sinhala full interaction
+  steps:
+  - intent: greet
+  - action: utter_greet
+  - intent: ask_attractions
+  - action: action_search_attractions
+  - intent: thank
+  - action: utter_thank
+  - intent: goodbye
+  - action: utter_goodbye
+
+- story: tamil full interaction
+  steps:
+  - intent: greet
+  - action: utter_greet
+  - intent: ask_restaurants
+  - action: action_search_restaurants
+  - intent: thank
+  - action: utter_thank
+  - intent: goodbye
+  - action: utter_goodbye

@@ -1,0 +1,94 @@
+# Simplified Rules for Sri Lanka Tourism Multilingual Chatbot
+
+version: "3.1"
+
+rules:
+
+# Greeting Rules
+- rule: Say goodbye anytime the user says goodbye
+  steps:
+  - intent: goodbye
+  - action: utter_goodbye
+
+- rule: Say 'you're welcome' when user thanks
+  steps:
+  - intent: thank
+  - action: utter_thank
+
+# Bot Challenge Rule
+- rule: Answer bot challenge
+  steps:
+  - intent: bot_challenge
+  - action: utter_iamabot
+
+# Affirmation and Denial Rules  
+- rule: Handle affirmation
+  condition:
+  - active_loop: null
+  steps:
+  - intent: affirm
+  - action: utter_affirm
+
+- rule: Handle denial
+  condition:
+  - active_loop: null
+  steps:
+  - intent: deny
+  - action: utter_deny
+
+# Emergency Information Rule - Always Available
+- rule: Provide emergency info immediately
+  steps:
+  - intent: ask_emergency
+  - action: utter_emergency_info
+
+# Weather Information Rule
+- rule: Provide weather info
+  steps:
+  - intent: ask_weather
+  - action: utter_weather_info
+
+- rule: Provide best time to visit info
+  steps:
+  - intent: ask_best_time_visit
+  - action: utter_weather_info
+
+# Culture and Language Rules
+- rule: Provide culture information
+  steps:
+  - intent: ask_culture
+  - action: utter_culture_info
+
+- rule: Provide language help
+  steps:
+  - intent: ask_language_help
+  - action: utter_language_help
+
+# Out of Scope Rule
+- rule: Handle out of scope
+  steps:
+  - intent: out_of_scope
+  - action: utter_out_of_scope
+
+# Chitchat Rule
+- rule: Handle chitchat
+  steps:
+  - intent: chitchat
+  - action: utter_default
+
+# Language Change Rule
+- rule: Change language when requested
+  steps:
+  - intent: change_language
+  - action: action_change_language
+
+# Mood Rules
+- rule: Handle happy mood
+  steps:
+  - intent: mood_great
+  - action: utter_happy
+
+- rule: Handle unhappy mood
+  steps:
+  - intent: mood_unhappy
+  - action: utter_cheer_up

@@ -1,0 +1,122 @@
+# Python
+__pycache__/
+*.py[cod]
+*$py.class
+*.so
+.Python
+build/
+develop-eggs/
+dist/
+downloads/
+eggs/
+.eggs/
+lib/
+lib64/
+parts/
+sdist/
+var/
+wheels/
+pip-wheel-metadata/
+share/python-wheels/
+*.egg-info/
+.installed.cfg
+*.egg
+MANIFEST
+
+# Virtual Environment
+venv/
+.venv/
+env/
+ENV/
+env.bak/
+venv.bak/
+
+# Environment Variables & Secrets
+.env
+.env.backup
+.env.local
+.env.*.local
+*.key
+*.pem
+credentials.json
+service-account.json
+
+# Large database exports
+database_export_*.json
+*_database.json
+
+# IDEs
+.vscode/
+.idea/
+*.swp
+*.swo
+*~
+.DS_Store
+
+# Logs
+logs/
+*.log
+log.txt
+
+# Database
+*.db
+*.sqlite
+*.sqlite3
+
+# Testing
+.pytest_cache/
+.coverage
+htmlcov/
+.tox/
+.hypothesis/
+
+# Jupyter Notebook
+.ipynb_checkpoints
+
+# Models & Data
+models/*.h5
+models/*.pkl
+models/*.tar.gz
+*.model
+*.pkl
+*.h5
+
+# LLM Models (Local models removed - using API-based LLMs instead)
+llm_models/
+!llm_models/.gitkeep
+
+# Docker
+.dockerignore
+
+# Rasa
+backend/rasa/models/*
+!backend/rasa/models/.gitkeep
+
+# Celery
+celerybeat-schedule
+celerybeat.pid
+
+# Redis dumps
+dump.rdb
+
+# MacOS
+.DS_Store
+.AppleDouble
+.LSOverride
+
+# Windows
+Thumbs.db
+ehthumbs.db
+Desktop.ini
+$RECYCLE.BIN/
+
+# Temporary files
+*.tmp
+*.bak
+*.swp
+*~
+
+# Security
+firebase-credentials.json
+google-credentials.json
+

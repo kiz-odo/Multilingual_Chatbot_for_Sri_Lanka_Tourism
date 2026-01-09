@@ -1,0 +1,601 @@
+{
+  "info": {
+    "name": "Sri Lanka Tourism Chatbot API",
+    "description": "Complete API collection for the Tourism Chatbot system with authentication, chat, itinerary, booking, and safety features",
+    "version": "1.0.0",
+    "schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json"
+  },
+  "auth": {
+    "type": "bearer",
+    "bearer": [
+      {
+        "key": "token",
+        "value": "{{access_token}}",
+        "type": "string"
+      }
+    ]
+  },
+  "variable": [
+    {
+      "key": "base_url",
+      "value": "http://localhost:8000/api/v1",
+      "type": "string"
+    },
+    {
+      "key": "access_token",
+      "value": "",
+      "type": "string"
+    },
+    {
+      "key": "refresh_token",
+      "value": "",
+      "type": "string"
+    },
+    {
+      "key": "user_id",
+      "value": "",
+      "type": "string"
+    }
+  ],
+  "item": [
+    {
+      "name": "Health & Status",
+      "item": [
+        {
+          "name": "Health Check",
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": {
+              "raw": "{{base_url}}/health",
+              "host": ["{{base_url}}"],
+              "path": ["health"]
+            }
+          },
+          "response": []
+        },
+        {
+          "name": "System Metrics",
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": {
+              "raw": "{{base_url}}/metrics",
+              "host": ["{{base_url}}"],
+              "path": ["metrics"]
+            }
+          },
+          "response": []
+        }
+      ]
+    },
+    {
+      "name": "Authentication",
+      "item": [
+        {
+          "name": "Register User",
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "exec": [
+                  "if (pm.response.code === 201) {",
+                  "    const response = pm.response.json();",
+                  "    pm.environment.set('user_id', response.user.id);",
+                  "}"
+                ],
+                "type": "text/javascript"
+              }
+            }
+          ],
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"email\": \"tourist@example.com\",\n  \"password\": \"SecurePass123!\",\n  \"name\": \"John Doe\",\n  \"phone\": \"+94771234567\",\n  \"country\": \"USA\",\n  \"preferred_language\": \"en\"\n}"
+            },
+            "url": {
+              "raw": "{{base_url}}/auth/register",
+              "host": ["{{base_url}}"],
+              "path": ["auth", "register"]
+            }
+          },
+          "response": []
+        },
+        {
+          "name": "Login",
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "exec": [
+                  "if (pm.response.code === 200) {",
+                  "    const response = pm.response.json();",
+                  "    pm.environment.set('access_token', response.access_token);",
+                  "    pm.environment.set('refresh_token', response.refresh_token);",
+                  "    pm.environment.set('user_id', response.user.id);",
+                  "}"
+                ],
+                "type": "text/javascript"
+              }
+            }
+          ],
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"email\": \"tourist@example.com\",\n  \"password\": \"SecurePass123!\"\n}"
+            },
+            "url": {
+              "raw": "{{base_url}}/auth/login",
+              "host": ["{{base_url}}"],
+              "path": ["auth", "login"]
+            }
+          },
+          "response": []
+        },
+        {
+          "name": "Google OAuth Login",
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"id_token\": \"{{google_id_token}}\"\n}"
+            },
+            "url": {
+              "raw": "{{base_url}}/auth/google",
+              "host": ["{{base_url}}"],
+              "path": ["auth", "google"]
+            }
+          },
+          "response": []
+        },
+        {
+          "name": "Refresh Token",
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"refresh_token\": \"{{refresh_token}}\"\n}"
+            },
+            "url": {
+              "raw": "{{base_url}}/auth/refresh",
+              "host": ["{{base_url}}"],
+              "path": ["auth", "refresh"]
+            }
+          },
+          "response": []
+        },
+        {
+          "name": "Setup MFA",
+          "request": {
+            "auth": {
+              "type": "bearer",
+              "bearer": [{"key": "token", "value": "{{access_token}}"}]
+            },
+            "method": "POST",
+            "url": {
+              "raw": "{{base_url}}/auth/mfa/setup",
+              "host": ["{{base_url}}"],
+              "path": ["auth", "mfa", "setup"]
+            }
+          },
+          "response": []
+        },
+        {
+          "name": "Verify MFA",
+          "request": {
+            "auth": {
+              "type": "bearer",
+              "bearer": [{"key": "token", "value": "{{access_token}}"}]
+            },
+            "method": "POST",
+            "header": [{"key": "Content-Type", "value": "application/json"}],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"totp_code\": \"123456\"\n}"
+            },
+            "url": {
+              "raw": "{{base_url}}/auth/mfa/verify",
+              "host": ["{{base_url}}"],
+              "path": ["auth", "mfa", "verify"]
+            }
+          },
+          "response": []
+        }
+      ]
+    },
+    {
+      "name": "Chat & AI",
+      "item": [
+        {
+          "name": "Send Chat Message",
+          "request": {
+            "auth": {
+              "type": "bearer",
+              "bearer": [{"key": "token", "value": "{{access_token}}"}]
+            },
+            "method": "POST",
+            "header": [{"key": "Content-Type", "value": "application/json"}],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"message\": \"What are the best beaches in Sri Lanka?\",\n  \"language\": \"en\",\n  \"session_id\": \"{{$guid}}\"\n}"
+            },
+            "url": {
+              "raw": "{{base_url}}/chat",
+              "host": ["{{base_url}}"],
+              "path": ["chat"]
+            }
+          },
+          "response": []
+        },
+        {
+          "name": "Multi-language Chat (Sinhala)",
+          "request": {
+            "auth": {
+              "type": "bearer",
+              "bearer": [{"key": "token", "value": "{{access_token}}"}]
+            },
+            "method": "POST",
+            "header": [{"key": "Content-Type", "value": "application/json"}],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"message\": \"ශ්‍රී ලංකාවේ හොඳම වෙරළ කොහෙද?\",\n  \"language\": \"si\",\n  \"session_id\": \"{{$guid}}\"\n}"
+            },
+            "url": {
+              "raw": "{{base_url}}/chat",
+              "host": ["{{base_url}}"],
+              "path": ["chat"]
+            }
+          },
+          "response": []
+        },
+        {
+          "name": "Get Conversation History",
+          "request": {
+            "auth": {
+              "type": "bearer",
+              "bearer": [{"key": "token", "value": "{{access_token}}"}]
+            },
+            "method": "GET",
+            "url": {
+              "raw": "{{base_url}}/chat/conversations",
+              "host": ["{{base_url}}"],
+              "path": ["chat", "conversations"]
+            }
+          },
+          "response": []
+        }
+      ]
+    },
+    {
+      "name": "Attractions & Places",
+      "item": [
+        {
+          "name": "Search Attractions",
+          "request": {
+            "method": "GET",
+            "url": {
+              "raw": "{{base_url}}/attractions?category=beach&region=south&limit=10",
+              "host": ["{{base_url}}"],
+              "path": ["attractions"],
+              "query": [
+                {"key": "category", "value": "beach"},
+                {"key": "region", "value": "south"},
+                {"key": "limit", "value": "10"}
+              ]
+            }
+          },
+          "response": []
+        },
+        {
+          "name": "Get Attraction Details",
+          "request": {
+            "method": "GET",
+            "url": {
+              "raw": "{{base_url}}/attractions/{{attraction_id}}",
+              "host": ["{{base_url}}"],
+              "path": ["attractions", "{{attraction_id}}"]
+            }
+          },
+          "response": []
+        },
+        {
+          "name": "Get Nearby Attractions",
+          "request": {
+            "method": "GET",
+            "url": {
+              "raw": "{{base_url}}/attractions/nearby?latitude=6.9271&longitude=79.8612&radius=10",
+              "host": ["{{base_url}}"],
+              "path": ["attractions", "nearby"],
+              "query": [
+                {"key": "latitude", "value": "6.9271"},
+                {"key": "longitude", "value": "79.8612"},
+                {"key": "radius", "value": "10"}
+              ]
+            }
+          },
+          "response": []
+        }
+      ]
+    },
+    {
+      "name": "Itinerary Planning",
+      "item": [
+        {
+          "name": "Create Itinerary",
+          "request": {
+            "auth": {
+              "type": "bearer",
+              "bearer": [{"key": "token", "value": "{{access_token}}"}]
+            },
+            "method": "POST",
+            "header": [{"key": "Content-Type", "value": "application/json"}],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"title\": \"7-Day Beach & Culture Tour\",\n  \"start_date\": \"2025-03-01\",\n  \"duration_days\": 7,\n  \"preferences\": [\"beaches\", \"culture\", \"wildlife\"],\n  \"budget\": \"medium\",\n  \"travelers_count\": 2\n}"
+            },
+            "url": {
+              "raw": "{{base_url}}/itineraries",
+              "host": ["{{base_url}}"],
+              "path": ["itineraries"]
+            }
+          },
+          "response": []
+        },
+        {
+          "name": "Get My Itineraries",
+          "request": {
+            "auth": {
+              "type": "bearer",
+              "bearer": [{"key": "token", "value": "{{access_token}}"}]
+            },
+            "method": "GET",
+            "url": {
+              "raw": "{{base_url}}/itineraries",
+              "host": ["{{base_url}}"],
+              "path": ["itineraries"]
+            }
+          },
+          "response": []
+        },
+        {
+          "name": "Export Itinerary to PDF",
+          "request": {
+            "auth": {
+              "type": "bearer",
+              "bearer": [{"key": "token", "value": "{{access_token}}"}]
+            },
+            "method": "GET",
+            "url": {
+              "raw": "{{base_url}}/itineraries/{{itinerary_id}}/export/pdf",
+              "host": ["{{base_url}}"],
+              "path": ["itineraries", "{{itinerary_id}}", "export", "pdf"]
+            }
+          },
+          "response": []
+        }
+      ]
+    },
+    {
+      "name": "Hotels & Bookings",
+      "item": [
+        {
+          "name": "Search Hotels",
+          "request": {
+            "method": "GET",
+            "url": {
+              "raw": "{{base_url}}/hotels?location=Colombo&check_in=2025-03-01&check_out=2025-03-05&guests=2",
+              "host": ["{{base_url}}"],
+              "path": ["hotels"],
+              "query": [
+                {"key": "location", "value": "Colombo"},
+                {"key": "check_in", "value": "2025-03-01"},
+                {"key": "check_out", "value": "2025-03-05"},
+                {"key": "guests", "value": "2"}
+              ]
+            }
+          },
+          "response": []
+        },
+        {
+          "name": "Create Booking",
+          "request": {
+            "auth": {
+              "type": "bearer",
+              "bearer": [{"key": "token", "value": "{{access_token}}"}]
+            },
+            "method": "POST",
+            "header": [{"key": "Content-Type", "value": "application/json"}],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"hotel_id\": \"{{hotel_id}}\",\n  \"check_in\": \"2025-03-01\",\n  \"check_out\": \"2025-03-05\",\n  \"room_type\": \"deluxe\",\n  \"guests\": 2,\n  \"payment_method\": \"card\"\n}"
+            },
+            "url": {
+              "raw": "{{base_url}}/bookings",
+              "host": ["{{base_url}}"],
+              "path": ["bookings"]
+            }
+          },
+          "response": []
+        },
+        {
+          "name": "Get Booking Details",
+          "request": {
+            "auth": {
+              "type": "bearer",
+              "bearer": [{"key": "token", "value": "{{access_token}}"}]
+            },
+            "method": "GET",
+            "url": {
+              "raw": "{{base_url}}/bookings/{{booking_id}}",
+              "host": ["{{base_url}}"],
+              "path": ["bookings", "{{booking_id}}"]
+            }
+          },
+          "response": []
+        }
+      ]
+    },
+    {
+      "name": "Safety & Emergency",
+      "item": [
+        {
+          "name": "Send SOS Alert",
+          "request": {
+            "auth": {
+              "type": "bearer",
+              "bearer": [{"key": "token", "value": "{{access_token}}"}]
+            },
+            "method": "POST",
+            "header": [{"key": "Content-Type", "value": "application/json"}],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"location\": {\n    \"latitude\": 6.9271,\n    \"longitude\": 79.8612\n  },\n  \"emergency_type\": \"medical\",\n  \"message\": \"Need immediate medical assistance\"\n}"
+            },
+            "url": {
+              "raw": "{{base_url}}/safety/sos",
+              "host": ["{{base_url}}"],
+              "path": ["safety", "sos"]
+            }
+          },
+          "response": []
+        },
+        {
+          "name": "Share Location",
+          "request": {
+            "auth": {
+              "type": "bearer",
+              "bearer": [{"key": "token", "value": "{{access_token}}"}]
+            },
+            "method": "POST",
+            "header": [{"key": "Content-Type", "value": "application/json"}],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"latitude\": 6.9271,\n  \"longitude\": 79.8612,\n  \"share_with\": [\"emergency_contact_id\"],\n  \"duration_hours\": 24\n}"
+            },
+            "url": {
+              "raw": "{{base_url}}/safety/share-location",
+              "host": ["{{base_url}}"],
+              "path": ["safety", "share-location"]
+            }
+          },
+          "response": []
+        },
+        {
+          "name": "Get Safety Alerts",
+          "request": {
+            "method": "GET",
+            "url": {
+              "raw": "{{base_url}}/safety/alerts?region=colombo",
+              "host": ["{{base_url}}"],
+              "path": ["safety", "alerts"],
+              "query": [{"key": "region", "value": "colombo"}]
+            }
+          },
+          "response": []
+        }
+      ]
+    },
+    {
+      "name": "Weather & Events",
+      "item": [
+        {
+          "name": "Get Weather",
+          "request": {
+            "method": "GET",
+            "url": {
+              "raw": "{{base_url}}/weather?city=Colombo",
+              "host": ["{{base_url}}"],
+              "path": ["weather"],
+              "query": [{"key": "city", "value": "Colombo"}]
+            }
+          },
+          "response": []
+        },
+        {
+          "name": "Get Events",
+          "request": {
+            "method": "GET",
+            "url": {
+              "raw": "{{base_url}}/events?region=colombo&start_date=2025-03-01&end_date=2025-03-31",
+              "host": ["{{base_url}}"],
+              "path": ["events"],
+              "query": [
+                {"key": "region", "value": "colombo"},
+                {"key": "start_date", "value": "2025-03-01"},
+                {"key": "end_date", "value": "2025-03-31"}
+              ]
+            }
+          },
+          "response": []
+        }
+      ]
+    },
+    {
+      "name": "Admin",
+      "item": [
+        {
+          "name": "Get System Statistics",
+          "request": {
+            "auth": {
+              "type": "bearer",
+              "bearer": [{"key": "token", "value": "{{admin_token}}"}]
+            },
+            "method": "GET",
+            "url": {
+              "raw": "{{base_url}}/admin/statistics",
+              "host": ["{{base_url}}"],
+              "path": ["admin", "statistics"]
+            }
+          },
+          "response": []
+        },
+        {
+          "name": "Get All Users",
+          "request": {
+            "auth": {
+              "type": "bearer",
+              "bearer": [{"key": "token", "value": "{{admin_token}}"}]
+            },
+            "method": "GET",
+            "url": {
+              "raw": "{{base_url}}/admin/users?page=1&limit=50",
+              "host": ["{{base_url}}"],
+              "path": ["admin", "users"],
+              "query": [
+                {"key": "page", "value": "1"},
+                {"key": "limit", "value": "50"}
+              ]
+            }
+          },
+          "response": []
+        }
+      ]
+    }
+  ]
+}

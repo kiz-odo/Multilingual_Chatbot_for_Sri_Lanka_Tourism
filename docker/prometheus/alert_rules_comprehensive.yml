@@ -1,0 +1,222 @@
+groups:
+- name: tourism_chatbot_alerts
+  interval: 30s
+  rules:
+  
+  # ================================
+  # HIGH PRIORITY - CRITICAL ALERTS
+  # ================================
+  
+  # Service Down
+  - alert: ServiceDown
+    expr: up{job="tourism-backend"} == 0
+    for: 1m
+    labels:
+      severity: critical
+      component: backend
+    annotations:
+      summary: "Tourism Chatbot service is down"
+      description: "Backend service {{ $labels.instance }} has been down for more than 1 minute."
+      runbook_url: "https://wiki.tourism.lk/runbooks/service-down"
+  
+  # High Error Rate
+  - alert: HighErrorRate
+    expr: rate(http_requests_total{status=~"5.."}[5m]) > 0.05
+    for: 5m
+    labels:
+      severity: critical
+      component: backend
+    annotations:
+      summary: "High error rate detected"
+      description: "Error rate is {{ $value | humanizePercentage }} on {{ $labels.instance }}"
+      runbook_url: "https://wiki.tourism.lk/runbooks/high-error-rate"
+  
+  # Database Connection Pool Exhausted
+  - alert: DatabaseConnectionPoolExhausted
+    expr: db_connections_active >= 100
+    for: 2m
+    labels:
+      severity: critical
+      component: database
+    annotations:
+      summary: "MongoDB connection pool exhausted"
+      description: "Database connection pool is at capacity ({{ $value }})"
+      runbook_url: "https://wiki.tourism.lk/runbooks/db-pool-exhausted"
+  
+  # API Response Time Degradation
+  - alert: HighAPIResponseTime
+    expr: histogram_quantile(0.95, rate(http_request_duration_seconds_bucket[5m])) > 2
+    for: 10m
+    labels:
+      severity: critical
+      component: backend
+    annotations:
+      summary: "API response time degraded"
+      description: "95th percentile response time is {{ $value }}s on {{ $labels.instance }}"
+      runbook_url: "https://wiki.tourism.lk/runbooks/high-response-time"
+  
+  # Pod Memory Usage High
+  - alert: PodMemoryUsageHigh
+    expr: (container_memory_usage_bytes{pod=~"tourism-backend.*"} / container_spec_memory_limit_bytes{pod=~"tourism-backend.*"}) > 0.9
+    for: 5m
+    labels:
+      severity: warning
+      component: backend
+    annotations:
+      summary: "Pod memory usage is high"
+      description: "Pod {{ $labels.pod }} memory usage is {{ $value | humanizePercentage }}"
+  
+  # Pod CPU Usage High
+  - alert: PodCPUUsageHigh
+    expr: (rate(container_cpu_usage_seconds_total{pod=~"tourism-backend.*"}[5m]) / container_spec_cpu_quota{pod=~"tourism-backend.*"} * 100) > 90
+    for: 5m
+    labels:
+      severity: warning
+      component: backend
+    annotations:
+      summary: "Pod CPU usage is high"
+      description: "Pod {{ $labels.pod }} CPU usage is {{ $value }}%"
+  
+  # ================================
+  # MEDIUM PRIORITY - WARNING ALERTS
+  # ================================
+  
+  # High Request Rate
+  - alert: HighRequestRate
+    expr: rate(http_requests_total[5m]) > 1000
+    for: 10m
+    labels:
+      severity: warning
+      component: backend
+    annotations:
+      summary: "High request rate detected"
+      description: "Request rate is {{ $value }} req/s on {{ $labels.instance }}"
+  
+  # MongoDB Slow Queries
+  - alert: MongoDBSlowQueries
+    expr: rate(mongodb_slow_queries_total[5m]) > 10
+    for: 5m
+    labels:
+      severity: warning
+      component: database
+    annotations:
+      summary: "MongoDB has slow queries"
+      description: "Slow query rate is {{ $value }}/s"
+  
+  # Redis Memory Usage High
+  - alert: RedisMemoryHigh
+    expr: (redis_memory_used_bytes / redis_memory_max_bytes) > 0.8
+    for: 10m
+    labels:
+      severity: warning
+      component: cache
+    annotations:
+      summary: "Redis memory usage is high"
+      description: "Redis memory usage is {{ $value | humanizePercentage }}"
+  
+  # Cache Hit Rate Low
+  - alert: CacheHitRateLow
+    expr: cache_hit_ratio < 0.7
+    for: 15m
+    labels:
+      severity: warning
+      component: cache
+    annotations:
+      summary: "Cache hit rate is low"
+      description: "Cache hit rate is {{ $value | humanizePercentage }}"
+  
+  # LLM API Error Rate High
+  - alert: LLMAPIErrorRateHigh
+    expr: rate(llm_api_errors_total[5m]) > 0.1
+    for: 5m
+    labels:
+      severity: warning
+      component: llm
+    annotations:
+      summary: "LLM API error rate is high"
+      description: "LLM API error rate is {{ $value | humanizePercentage }}"
+  
+  # Circuit Breaker Open
+  - alert: CircuitBreakerOpen
+    expr: circuit_breaker_state == 1
+    for: 2m
+    labels:
+      severity: warning
+      component: backend
+    annotations:
+      summary: "Circuit breaker is open"
+      description: "Circuit breaker for {{ $labels.service }} is open"
+  
+  # ================================
+  # LOW PRIORITY - INFO ALERTS
+  # ================================
+  
+  # Replica Count Low
+  - alert: BackendReplicaCountLow
+    expr: kube_deployment_status_replicas_available{deployment="tourism-backend"} < 2
+    for: 5m
+    labels:
+      severity: info
+      component: backend
+    annotations:
+      summary: "Backend replica count is low"
+      description: "Only {{ $value }} backend replicas are available"
+  
+  # Disk Space Low
+  - alert: DiskSpaceLow
+    expr: (node_filesystem_avail_bytes / node_filesystem_size_bytes) < 0.2
+    for: 10m
+    labels:
+      severity: info
+      component: infrastructure
+    annotations:
+      summary: "Disk space is low"
+      description: "Disk space on {{ $labels.instance }} is {{ $value | humanizePercentage }}"
+  
+  # Certificate Expiring Soon
+  - alert: CertificateExpiringSoon
+    expr: (cert_expiry_timestamp_seconds - time()) < 604800
+    for: 1h
+    labels:
+      severity: info
+      component: security
+    annotations:
+      summary: "SSL certificate expiring soon"
+      description: "Certificate {{ $labels.cn }} expires in {{ $value | humanizeDuration }}"
+  
+  # ================================
+  # BUSINESS METRICS ALERTS
+  # ================================
+  
+  # User Registration Drop
+  - alert: UserRegistrationDrop
+    expr: rate(users_registered_total[1h]) < 1
+    for: 2h
+    labels:
+      severity: info
+      component: business
+    annotations:
+      summary: "User registration rate dropped"
+      description: "User registration rate is only {{ $value }}/hour"
+  
+  # Booking Conversion Rate Low
+  - alert: BookingConversionRateLow
+    expr: (rate(bookings_completed_total[1h]) / rate(itineraries_created_total[1h])) < 0.05
+    for: 4h
+    labels:
+      severity: info
+      component: business
+    annotations:
+      summary: "Booking conversion rate is low"
+      description: "Booking conversion rate is {{ $value | humanizePercentage }}"
+  
+  # SOS Alert Volume High
+  - alert: SOSAlertVolumeHigh
+    expr: rate(sos_alerts_total[1h]) > 10
+    for: 30m
+    labels:
+      severity: warning
+      component: safety
+    annotations:
+      summary: "High volume of SOS alerts"
+      description: "SOS alert rate is {{ $value }}/hour - possible incident"

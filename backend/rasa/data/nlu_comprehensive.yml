@@ -1,0 +1,1020 @@
+
+
+# Comprehensive NLU Training Data for Sri Lanka Tourism Multilingual Chatbot
+
+version: "3.1"
+
+nlu:
+# ==================== GREETINGS & BASIC CONVERSATION ====================
+
+- intent: greet
+  examples: |
+    - hello
+    - hi there
+    - hey
+    - good morning
+    - good afternoon
+    - good evening
+    - howdy
+    - hiya
+    - greetings
+    - hi bot
+    - hello there
+    - ආයුබෝවන්
+    - හලෝ
+    - හායි
+    - සුභ උදෑසනක්
+    - වන්දනා
+    - வணக்கம்
+    - வணக்கம் எப்படி இருக்கீங்க
+    - नमस्ते
+    - हैलो
+    - guten tag
+    - guten morgen
+    - guten abend
+    - bonjour
+    - salut
+    - bonsoir
+    - こんにちは
+    - おはようございます
+    - 你好
+    - 早上好
+    - 晚上好
+    - start
+    - begin
+    - let's start
+
+- intent: goodbye
+  examples: |
+    - bye
+    - goodbye
+    - see you later
+    - see you soon
+    - talk to you later
+    - ttyl
+    - catch you later
+    - farewell
+    - take care
+    - until next time
+    - ගිහින් එන්නම්
+    - සුභ දවසක්
+    - ආයෙ හම්බෙමු
+    - பிரியாவிடை
+    - பிறகு பார்க்கலாம்
+    - சரி பிறகு பார்க்கிறேன்
+    - au revoir
+    - à bientôt
+    - auf wiedersehen
+    - tschüss
+    - さようなら
+    - またね
+    - 再见
+    - 拜拜
+    - have a great day
+    - thanks for your help goodbye
+    - ok bye
+
+- intent: affirm
+  examples: |
+    - yes
+    - yeah
+    - yep
+    - yup
+    - sure
+    - absolutely
+    - of course
+    - definitely
+    - correct
+    - right
+    - exactly
+    - indeed
+    - affirmative
+    - ok
+    - okay
+    - alright
+    - sounds good
+    - that works
+    - perfect
+    - ඔව්
+    - හරි
+    - හරියටම
+    - ඉස්සෙල්ලම
+    - ஆம்
+    - சரி
+    - உறுதியாக
+    - சரியாக
+    - ja
+    - genau
+    - oui
+    - bien sûr
+    - はい
+    - そうです
+    - 是的
+    - 对
+
+- intent: deny
+  examples: |
+    - no
+    - nope
+    - never
+    - not really
+    - no way
+    - no thanks
+    - nah
+    - I don't think so
+    - I don't want that
+    - that's not right
+    - incorrect
+    - wrong
+    - not interested
+    - නෑ
+    - එපා
+    - නෑ අයියා
+    - නෑ ඕව ඕනේ නෑ
+    - இல்லை
+    - வேண்டாம்
+    - இது சரியல்ல
+    - nein
+    - nicht
+    - non
+    - pas vraiment
+    - いいえ
+    - 違います
+    - 不是
+    - 不要
+
+- intent: thank
+  examples: |
+    - thank you
+    - thanks
+    - thank you so much
+    - thanks a lot
+    - much appreciated
+    - cheers
+    - many thanks
+    - I appreciate it
+    - grateful
+    - thanks for your help
+    - ස්තූතියි
+    - ගොඩක් ස්තූතියි
+    - බොහොම ස්තූතියි
+    - ස්තූති වන්ත වෙනවා
+    - நன்றி
+    - மிக்க நன்றி
+    - நன்றி மிக்க உதவிக்கு
+    - danke
+    - danke schön
+    - vielen dank
+    - merci
+    - merci beaucoup
+    - ありがとう
+    - ありがとうございます
+    - 谢谢
+    - 非常感谢
+    - thanks that helps
+    - perfect thank you
+
+- intent: bot_challenge
+  examples: |
+    - are you a bot?
+    - are you human?
+    - am I talking to a bot?
+    - am I talking to a human?
+    - what are you?
+    - who are you?
+    - are you real?
+    - are you AI?
+    - are you a chatbot?
+    - are you an assistant?
+    - what kind of bot are you?
+    - ඔයා මිනිහෙක්ද?
+    - ඔයා බොට් එකක්ද?
+    - நீங்கள் ஒரு பாட்டா?
+    - நீங்கள் மனிதரா?
+
+- intent: chitchat
+  examples: |
+    - how are you?
+    - what's up?
+    - how's your day?
+    - nice to meet you
+    - you're helpful
+    - I like you
+    - you're smart
+    - you're great
+    - good job
+    - well done
+    - කොහොමද?
+    - කොහොමද බොට්
+    - எப்படி இருக்கீங்க?
+    - நீங்கள் சிறந்தவர்
+    - how's it going?
+    - what do you do?
+
+# ==================== TOURISM INTENTS ====================
+
+# Attractions - General
+- intent: ask_attractions
+  examples: |
+    - what are the popular attractions in Sri Lanka?
+    - tell me about places to visit
+    - what can I see in Sri Lanka?
+    - tourist attractions
+    - places of interest
+    - what to visit
+    - show me attractions
+    - best places to visit
+    - top attractions
+    - must-see places
+    - places to go
+    - sightseeing options
+    - what are the main tourist spots?
+    - recommend some places to visit
+    - I want to explore Sri Lanka
+    - show me tourist places
+    - what should I visit in Sri Lanka?
+    - ශ්‍රී ලංකාවේ ප්‍රසිද්ධ ආකර්ෂණීය ස්ථාන මොනවද?
+    - බලන්න පුළුවන් තැන් මොනවද?
+    - යන්න පුළුවන් ස්ථාන
+    - ප්‍රධාන සංචාරක ස්ථාන
+    - කොහේද යන්න ඕනේ?
+    - இலங்கையில் பிரபலமான இடங்கள் எவை?
+    - பார்க்க வேண்டிய இடங்கள்
+    - சுற்றுலா இடங்கள்
+    - முக்கிய சுற்றுலா தளங்கள்
+    - que voir au Sri Lanka?
+    - lieux touristiques
+    - was kann man in Sri Lanka sehen?
+    - touristische orte
+    - スリランカの観光地
+    - 見るべき場所
+    - 斯里兰卡景点
+    - 旅游景点
+    - interesting places
+    - famous sites
+    - where should I go in Sri Lanka?
+
+# Attractions by Category
+- intent: ask_attractions_by_category
+  examples: |
+    - historical places in Sri Lanka
+    - ancient sites
+    - temples to visit
+    - beaches in Sri Lanka
+    - wildlife parks
+    - national parks
+    - waterfalls
+    - hill country attractions
+    - cultural sites
+    - archaeological sites
+    - show me [historical](category) places
+    - I want to see [beaches](category)
+    - tell me about [temples](category)
+    - [wildlife](category) attractions
+    - [mountain](category) destinations
+    - [cultural](category) heritage sites
+    - Buddhist [temples](category)
+    - UNESCO [world heritage](category) sites
+    - [nature](category) attractions
+    - [adventure](category) activities
+    - colonial [architecture](category)
+    - tea [plantations](category)
+    - ඓතිහාසික ස්ථාන
+    - විහාරස්ථාන
+    - වෙරළ
+    - වන්‍යජීවී උද්‍යාන
+    - කඳුකර ප්‍රදේශ
+    - දිය ඇලි
+    - පුරාවිද්‍යා ස්ථාන
+    - வரலாற்று இடங்கள்
+    - கோவில்கள்
+    - கடற்கரைகள்
+    - வனவிலங்கு பூங்காக்கள்
+    - மலை நாடு
+    - நீர்வீழ்ச்சிகள்
+    - religious sites
+    - spiritual places
+    - forts and fortresses
+
+# Specific Attraction Details
+- intent: ask_attraction_details
+  examples: |
+    - tell me about [Sigiriya](attraction_name)
+    - information about [Temple of the Tooth](attraction_name)
+    - what is [Yala National Park](attraction_name)?
+    - details of [Galle Fort](attraction_name)
+    - how to visit [Ella](attraction_name)?
+    - [Adam's Peak](attraction_name) information
+    - tell me more about [Polonnaruwa](attraction_name)
+    - what can I see at [Anuradhapura](attraction_name)?
+    - [Dambulla Cave Temple](attraction_name) details
+    - how much is [Mirissa Beach](attraction_name)?
+    - opening hours for [Kandy](attraction_name)
+    - price for [Nuwara Eliya](attraction_name)
+    - how to reach [Arugam Bay](attraction_name)?
+    - what to do in [Trincomalee](attraction_name)?
+    - [සීගිරිය](attraction_name) ගැන කියන්න
+    - [දළදා මාළිගාව](attraction_name) ගැන
+    - [යාල උද්‍යානය](attraction_name) මොකද්ද?
+    - [ගාල්ල කොටුව](attraction_name) විස්තර
+    - [சிகிரியா](attraction_name) பற்றி சொல்லுங்கள்
+    - [பல் கோவில்](attraction_name) பற்றி
+    - [யால பூங்கா](attraction_name) என்றால் என்ன?
+    - is [Sigiriya](attraction_name) worth visiting?
+    - best time to visit [Yala](attraction_name)
+    - can I visit [Horton Plains](attraction_name) in the rain?
+
+# Restaurants - General
+- intent: ask_restaurants
+  examples: |
+    - where can I eat in Sri Lanka?
+    - good restaurants
+    - places to eat
+    - food recommendations
+    - dining options
+    - best restaurants
+    - local food places
+    - seafood restaurants
+    - fine dining
+    - budget restaurants
+    - authentic Sri Lankan restaurants
+    - where to have dinner?
+    - lunch recommendations
+    - breakfast places
+    - street food spots
+    - කන්න පුළුවන් තැන්
+    - හොඳ අවන්හල්
+    - ආහාර නිර්දේශ
+    - කොහේද කන්න හොඳ?
+    - சாப்பிட நல்ல இடங்கள்
+    - உணவகங்கள்
+    - நல்ல உணவு இடங்கள்
+    - où manger au Sri Lanka?
+    - meilleurs restaurants
+    - restaurants empfehlungen
+    - おすすめレストラン
+    - 美味しいレストラン
+    - 餐厅推荐
+    - 好吃的地方
+    - vegetarian restaurants
+    - halal restaurants
+    - Chinese restaurants in Colombo
+
+# Restaurant Details
+- intent: ask_restaurant_details
+  examples: |
+    - tell me about [Ministry of Crab](restaurant_name)
+    - information about [Curry Leaf](restaurant_name)
+    - [The Lagoon](restaurant_name) restaurant
+    - details of [Nuga Gama](restaurant_name)
+    - how much does [Ministry of Crab](restaurant_name) cost?
+    - is [The Lagoon](restaurant_name) expensive?
+    - [Raja Bojun](restaurant_name) menu
+    - [Heladiv Tea Club](restaurant_name) reviews
+    - where is [Chutneys](restaurant_name)?
+    - [Curry Leaf](restaurant_name) reservations
+    - [Ministry of Crab](restaurant_name) opening hours
+
+# Hotels - General
+- intent: ask_hotels
+  examples: |
+    - where to stay in Sri Lanka?
+    - hotel recommendations
+    - accommodation options
+    - places to stay
+    - best hotels
+    - budget hotels
+    - luxury hotels
+    - resorts in Sri Lanka
+    - boutique hotels
+    - guesthouses
+    - hostels
+    - hotels in Colombo
+    - hotels near the beach
+    - hotels with pool
+    - ඉන්න තැන්
+    - හොටල්
+    - හොටල් නිර්දේශ
+    - කොහේද හොටලේ ඉන්නේ හොඳ?
+    - தங்குமிடம்
+    - ஹோட்டல்கள்
+    - நல்ல ஹோட்டல்கள்
+    - hôtels au Sri Lanka
+    - meilleurs hôtels
+    - hotels empfehlungen
+    - ホテル
+    - おすすめホテル
+    - 酒店
+    - 推荐酒店
+    - cheap accommodation
+    - family-friendly hotels
+    - hotels with breakfast
+
+# Hotel Details
+- intent: ask_hotel_details
+  examples: |
+    - tell me about [Galle Face Hotel](hotel_name)
+    - information about [Jetwing Vil Uyana](hotel_name)
+    - [Heritance Kandalama](hotel_name) hotel
+    - [Cinnamon Grand](hotel_name) details
+    - how much is [Shangrila Hotel](hotel_name)?
+    - [Jetwing Lighthouse](hotel_name) rooms
+    - amenities at [Taj Samudra](hotel_name)
+    - [Kingsbury Hotel](hotel_name) reviews
+    - [Galle Face Hotel](hotel_name) price per night
+    - book [Heritance Kandalama](hotel_name)
+
+# Transport - General
+- intent: ask_transport
+  examples: |
+    - how to get around Sri Lanka?
+    - transportation options
+    - public transport
+    - trains in Sri Lanka
+    - buses
+    - taxis
+    - how to travel
+    - getting around
+    - tuk tuk
+    - rental cars
+    - domestic flights
+    - inter-city transport
+    - airport transfer
+    - ගමන් කරන්නේ කොහොමද?
+    - ප්‍රවාහනය
+    - දුම්රිය
+    - බස්
+    - போக்குவரத்து
+    - எப்படி பயணம் செய்வது?
+    - ரயில்கள்
+    - பேருந்துகள்
+    - comment se déplacer?
+    - transport public
+    - transport optionen
+    - 交通
+    - 如何出行
+    - train routes
+    - bus schedule
+
+# Transport Details
+- intent: ask_transport_details
+  examples: |
+    - train from [Colombo](location) to [Kandy](location)
+    - bus to [Galle](location)
+    - how to get to [Ella](location)?
+    - taxi to [airport](location)
+    - [train](transport_type) schedule
+    - [bus](transport_type) timings
+    - [tuk tuk](transport_type) fare
+    - [rental car](transport_type) prices
+    - how much is train from [Colombo](location) to [Kandy](location)?
+    - best way to reach [Sigiriya](location)
+    - bus from [Kandy](location) to [Nuwara Eliya](location)
+    - train tickets to [Ella](location)
+    - airport to [Colombo](location) transport
+    - [Colombo](location) to [Galle](location) train timings
+
+# Events
+- intent: ask_events
+  examples: |
+    - events in Sri Lanka
+    - festivals
+    - cultural events
+    - what's happening this month?
+    - upcoming festivals
+    - local celebrations
+    - Vesak festival
+    - Kandy Perahera
+    - New Year celebrations
+    - Sinhala New Year
+    - Tamil New Year
+    - religious festivals
+    - cultural shows
+    - music festivals
+    - උත්සව
+    - පෙරහැර
+    - වෙසක් මංගල්‍යය
+    - අලුත් අවුරුද්ද
+    - திருவிழாக்கள்
+    - பெரஹெரா
+    - புத்தாண்டு
+    - வேசாக்
+    - fêtes
+    - festivals
+    - 祭り
+    - イベント
+    - 节日
+    - 活动
+
+# Event Details
+- intent: ask_event_details
+  examples: |
+    - tell me about [Kandy Perahera](event_name)
+    - when is [Vesak](event_name)?
+    - [Sinhala New Year](event_name) details
+    - information about [Galle Literary Festival](event_name)
+    - what is [Esala Perahera](event_name)?
+    - [Navam Perahera](event_name) dates
+    - [Vesak](event_name) celebrations
+
+# Location & Directions
+- intent: ask_location
+  examples: |
+    - where is [Sigiriya](location)?
+    - location of [Temple of the Tooth](location)
+    - [Galle Fort](location) address
+    - how far is [Ella](location)?
+    - distance to [Yala](location)
+    - [Colombo](location) location
+    - [සීගිරිය](location) කොහෙද?
+    - [சிகிரியா](location) எங்கே?
+
+- intent: ask_directions
+  examples: |
+    - how do I get to [Sigiriya](location)?
+    - directions to [Kandy](location)
+    - how to reach [Galle Fort](location)?
+    - best route to [Ella](location)
+    - way to [Mirissa](location)
+    - navigate to [Nuwara Eliya](location)
+    - [Yala](location) driving directions
+    - [Colombo](location) කොහොමද යන්නේ?
+    - [கண்டிக்கு](location) எப்படி செல்வது?
+
+- intent: ask_distance
+  examples: |
+    - how far is [Kandy](location) from [Colombo](location)?
+    - distance between [Galle](location) and [Mirissa](location)
+    - km from [Colombo](location) to [Sigiriya](location)
+    - [Ella](location) to [Nuwara Eliya](location) distance
+    - how many km to [Yala](location)?
+
+- intent: ask_travel_time
+  examples: |
+    - how long does it take to reach [Kandy](location)?
+    - travel time from [Colombo](location) to [Galle](location)
+    - how many hours to [Ella](location)?
+    - duration to [Sigiriya](location)
+    - [Colombo](location) to [Kandy](location) by train time
+
+# Food and Cuisine
+- intent: ask_food
+  examples: |
+    - Sri Lankan food
+    - local dishes
+    - traditional cuisine
+    - what to eat
+    - famous dishes
+    - food specialties
+    - typical food
+    - must-try dishes
+    - food culture
+    - culinary experiences
+    - ශ්‍රී ලංකන් ආහාර
+    - දේශීය කෑම
+    - ප්‍රසිද්ධ කෑම
+    - இலங்கை உணவு
+    - பாரம்பரிய உணவு
+    - பிரபலமான உணவுகள்
+    - cuisine sri lankaise
+    - lokale gerichte
+    - スリランカ料理
+    - 伝統料理
+    - 斯里兰卡菜
+    - 传统美食
+
+- intent: ask_local_dishes
+  examples: |
+    - rice and curry
+    - kottu roti
+    - hoppers
+    - string hoppers
+    - lamprais
+    - devilled dishes
+    - wambatu moju
+    - dhal curry
+    - pol sambol
+    - fish ambul thiyal
+    - parippu
+    - what is [kottu](dish_name)?
+    - tell me about [hoppers](dish_name)
+    - [lamprais](dish_name) recipe
+    - [කොත්තු](dish_name) මොකද්ද?
+    - [ආප්ප](dish_name) ගැන කියන්න
+    - [இட்லி](dish_name) என்றால் என்ன?
+    - [கொத்து](dish_name) பற்றி சொல்லுங்கள்
+
+- intent: ask_dietary_restrictions
+  examples: |
+    - vegetarian food
+    - vegan options
+    - halal restaurants
+    - gluten-free food
+    - no meat options
+    - dairy-free dishes
+    - vegetarian restaurants
+    - I'm vegetarian
+    - I don't eat meat
+    - vegan food in Sri Lanka
+    - සත්ත්‍ව ආහාර නැති
+    - சைவ உணவு
+    - மாமிசம் இல்லாத உணவு
+
+# Weather & Climate
+- intent: ask_weather
+  examples: |
+    - what's the weather like?
+    - climate in Sri Lanka
+    - weather forecast
+    - temperature in Sri Lanka
+    - is it raining?
+    - weather in [Colombo](location)
+    - climate in [Kandy](location)
+    - monsoon season
+    - dry season
+    - rainfall
+    - humidity
+    - කාලගුණය කොහොමද?
+    - කාලගුණ තත්ත්වය
+    - වැස්ස එන්න යනවද?
+    - வானிலை எப்படி?
+    - இப்போது மழை வருமா?
+
+- intent: ask_best_time_visit
+  examples: |
+    - when should I visit Sri Lanka?
+    - best time to travel
+    - ideal season
+    - when to go
+    - good time to visit
+    - avoid monsoon
+    - peak season
+    - off season
+    - best months to visit
+    - when is dry season?
+    - කවදා යන්නද හොඳ?
+    - හොඳම කාලය කවදාද?
+    - எப்போது செல்வது நல்லது?
+    - சிறந்த காலம் எப்போது?
+    - best time for [beaches](category)?
+    - when to visit [Yala](location)?
+
+# Emergency & Safety
+- intent: ask_emergency
+  examples: |
+    - emergency numbers
+    - police contact
+    - hospital
+    - ambulance
+    - help
+    - emergency services
+    - tourist police
+    - I need help
+    - call police
+    - medical emergency
+    - accident
+    - හදිසි අංක
+    - පොලිසිය
+    - රෝහල
+    - උදව් අවශ්‍යයි
+    - அவசர எண்கள்
+    - காவல்துறை
+    - மருத்துவமனை
+    - உதவி வேண்டும்
+
+- intent: ask_emergency_details
+  examples: |
+    - police station near me
+    - hospital in [Colombo](location)
+    - pharmacy nearby
+    - tourist police number
+    - embassy contact
+    - lost passport
+    - stolen wallet
+
+- intent: ask_safety
+  examples: |
+    - is Sri Lanka safe?
+    - safety tips
+    - travel safety
+    - precautions
+    - safe areas
+    - things to avoid
+    - crime rate
+    - safe for solo travelers?
+    - safe for women?
+    - ආරක්ෂාව
+    - ආරක්ෂිතද?
+    - பாதுகாப்பு
+    - பாதுகாப்பானதா?
+
+# Currency & Money
+- intent: ask_currency
+  examples: |
+    - what is the currency?
+    - Sri Lankan rupee
+    - exchange rate
+    - money exchange
+    - ATM
+    - credit cards accepted?
+    - currency conversion
+    - where to exchange money?
+    - best exchange rate
+    - dollars to rupees
+    - euros to LKR
+    - මුදල් ඒකකය
+    - විනිමය අනුපාතය
+    - ATM කොහෙද?
+    - நாணயம்
+    - பணம் மாற்றுதல்
+    - ATM எங்கே?
+
+# Budget & Costs
+- intent: ask_budget
+  examples: |
+    - how much does it cost?
+    - budget for Sri Lanka
+    - daily expenses
+    - cost of living
+    - price range
+    - expensive or cheap?
+    - average daily cost
+    - budget travel
+    - cost per day
+    - hotel prices
+    - meal costs
+    - entrance fees
+    - වියදම කීයද?
+    - අයවැය
+    - දිනකට වියදම
+    - செலவு எவ்வளவு?
+    - பட்ஜெட்
+    - ஒரு நாள் செலவு
+
+# Visa & Travel Documents
+- intent: ask_visa
+  examples: |
+    - do I need a visa?
+    - visa requirements
+    - ETA application
+    - visa on arrival
+    - how to get visa?
+    - visa fees
+    - tourist visa
+    - visa extension
+    - passport requirements
+    - වීසා අවශ්‍යද?
+    - வீசா தேவையா?
+
+# Culture & Customs
+- intent: ask_culture
+  examples: |
+    - Sri Lankan culture
+    - customs and traditions
+    - cultural etiquette
+    - dos and don'ts
+    - religious practices
+    - local customs
+    - cultural norms
+    - dress code
+    - temple etiquette
+    - සංස්කෘතිය
+    - සම්ප්‍රදායන්
+    - පණ්பාදයන්
+    - பண்பாடு
+    - பாரம்பரியங்கள்
+    - கலாச்சாரம்
+
+- intent: ask_festivals
+  examples: |
+    - festivals in Sri Lanka
+    - cultural events
+    - Vesak
+    - Perahera
+    - New Year
+    - religious festivals
+    - Sinhala Tamil New Year
+    - Diwali in Sri Lanka
+    - Christmas celebrations
+    - උත්සව
+    - පෙරහැර
+    - වෙසක්
+    - அவுරுද்த்
+    - திருவிழாக்கள்
+    - பெரஹெரா
+    - வேசாக்
+
+- intent: ask_customs
+  examples: |
+    - cultural dos and don'ts
+    - what not to do in Sri Lanka?
+    - customs to follow
+    - etiquette tips
+    - respectful behavior
+    - temple rules
+    - dress code for temples
+
+# Language Help
+- intent: ask_language_help
+  examples: |
+    - what languages are spoken?
+    - do people speak English?
+    - learn Sinhala phrases
+    - Tamil phrases
+    - basic words
+    - how to say hello
+    - how to say thank you
+    - common phrases
+    - language guide
+    - භාෂා උදව්
+    - ඉංග්‍රීසි කතා කරනවද?
+    - மொழி உதவி
+    - ஆங்கிலம் பேசுவார்களா?
+    - teach me some Sinhala
+    - useful phrases
+
+# Booking & Reservations
+- intent: ask_booking
+  examples: |
+    - how to book tickets?
+    - make a reservation
+    - book a hotel
+    - restaurant booking
+    - tour booking
+    - book train tickets
+    - safari booking
+    - can I book online?
+    - reservation process
+    - booking confirmation
+    - හෝටල් එකක් book කරන්නේ කොහොමද?
+    - முன்பதிவு செய்வது எப்படி?
+
+# Recommendations
+- intent: ask_recommendations
+  examples: |
+    - what do you recommend?
+    - suggestions for me
+    - best places for families
+    - romantic destinations
+    - adventure activities
+    - relaxing places
+    - off the beaten path
+    - hidden gems
+    - local favorites
+    - recommend based on my interests
+    - suggest an itinerary
+    - පවුලට හොඳ තැන්
+    - குடும்பத்துடன் செல்ல இடங்கள்
+
+# Activities
+- intent: ask_activities
+  examples: |
+    - things to do in Sri Lanka
+    - activities
+    - water sports
+    - surfing
+    - diving
+    - snorkeling
+    - whale watching
+    - safari
+    - hiking
+    - trekking
+    - tea plantation tours
+    - adventure activities
+    - outdoor activities
+    - කරන්න පුළුවන් දේවල්
+    - செய்ய வேண்டிய விஷயங்கள்
+    - what activities in [Mirissa](location)?
+
+# Shopping
+- intent: ask_shopping
+  examples: |
+    - where to shop?
+    - shopping in Sri Lanka
+    - souvenirs
+    - handicrafts
+    - local products
+    - tea to buy
+    - spices
+    - gems
+    - shopping malls
+    - local markets
+    - ගන්න පුළුවන් දේවල්
+    - வாங்க நல்ல பொருட்கள்
+    - best place to buy tea
+
+# Photography
+- intent: ask_photography
+  examples: |
+    - best photo spots
+    - photography locations
+    - scenic views
+    - sunrise spots
+    - sunset points
+    - Instagram worthy places
+    - photography tips
+    - camera rules at temples
+    - can I take photos?
+
+# Mobile & Internet
+- intent: ask_connectivity
+  examples: |
+    - mobile network
+    - SIM card
+    - internet in Sri Lanka
+    - WiFi availability
+    - data plans
+    - phone coverage
+    - where to buy SIM?
+    - mobile providers
+    - SIM card එකක් ගන்නේ කොහෙද?
+    - இணைய வசதி
+
+# Health & Medical
+- intent: ask_health
+  examples: |
+    - vaccinations needed?
+    - malaria risk
+    - health precautions
+    - dengue fever
+    - drinking water safe?
+    - medical insurance
+    - health tips
+    - ටික්කා අවශ්‍යද?
+    - தடுப்பூசி தேவையா?
+
+# Family Travel
+- intent: ask_family_travel
+  examples: |
+    - family-friendly places
+    - traveling with kids
+    - child-friendly attractions
+    - activities for children
+    - family hotels
+    - kid-friendly restaurants
+    - ළමයින් සමඟ ගමන්
+    - குழந்தைகளுடன் பயணம்
+
+# Language Change
+- intent: change_language
+  examples: |
+    - change language to [English](language)
+    - speak in [Sinhala](language)
+    - switch to [Tamil](language)
+    - [සිංහල](language) කතා කරන්න
+    - [தமிழில்](language) பேசுங்கள்
+    - [français](language) s'il vous plaît
+    - auf [deutsch](language) bitte
+    - [日本語](language)で話して
+    - [中文](language)
+    - talk in [German](language)
+    - English please
+    - can you speak [Tamil](language)?
+
+# Mood
+- intent: mood_great
+  examples: |
+    - I'm feeling great
+    - wonderful
+    - amazing
+    - fantastic
+    - I'm happy
+    - excellent
+    - perfect
+    - මාර සතුටුයි
+    - மிகவும் மகிழ்ச்சி
+
+- intent: mood_unhappy
+  examples: |
+    - I'm sad
+    - not good
+    - terrible
+    - awful
+    - disappointed
+    - frustrated
+    - angry
+    - unhappy
+    - සතුටක් නෑ
+    - மகிழ்ச்சியாக இல்லை
+
+# Out of Scope
+- intent: out_of_scope
+  examples: |
+    - what's the weather like in New York?
+    - tell me about Indian food
+    - how to cook pasta?
+    - what's your favorite color?
+    - do you like movies?
+    - tell me a joke
+    - what's 2+2?
+    - stock market prices
+    - latest news
+    - sports scores
+    - political news
+    - movie recommendations
+    - book suggestions
+    - fashion advice
+    - relationship advice
+    - medical diagnosis
+    - legal advice
+

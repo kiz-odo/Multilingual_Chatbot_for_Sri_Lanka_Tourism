@@ -1,0 +1,181 @@
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: backup-scripts
+  namespace: tourism-chatbot
+data:
+  backup.sh: |
+    #!/bin/bash
+    set -euo pipefail
+    
+    DATE=$(date +%Y%m%d_%H%M%S)
+    BACKUP_NAME="tourism_backup_${DATE}"
+    BACKUP_PATH="/backups/${BACKUP_NAME}"
+    
+    echo "[$(date)] Starting MongoDB backup: ${BACKUP_NAME}"
+    
+    mongodump \
+      --host=mongodb-0.mongodb-service.tourism-chatbot.svc.cluster.local:27017 \
+      --username=${MONGODB_USER} \
+      --password=${MONGODB_PASS} \
+      --authenticationDatabase=admin \
+      --db=${DATABASE_NAME} \
+      --out=${BACKUP_PATH} \
+      --gzip
+    
+    echo "[$(date)] Compressing backup..."
+    tar -czf "${BACKUP_PATH}.tar.gz" -C /backups "${BACKUP_NAME}"
+    rm -rf "${BACKUP_PATH}"
+    
+    BACKUP_SIZE=$(du -h "${BACKUP_PATH}.tar.gz" | cut -f1)
+    echo "[$(date)] Backup completed: ${BACKUP_SIZE}"
+    
+    # Upload to S3 if configured
+    if [ -n "${S3_BUCKET:-}" ]; then
+      echo "[$(date)] Uploading to S3..."
+      aws s3 cp "${BACKUP_PATH}.tar.gz" "s3://${S3_BUCKET}/mongodb-backups/" --storage-class STANDARD_IA
+      echo "[$(date)] S3 upload completed"
+    fi
+    
+    # Clean old backups (keep last 30 days)
+    echo "[$(date)] Cleaning old backups..."
+    find /backups -name "tourism_backup_*.tar.gz" -type f -mtime +30 -delete
+    
+    # Send notification
+    if [ -n "${SLACK_WEBHOOK:-}" ]; then
+      curl -X POST "${SLACK_WEBHOOK}" \
+        -H 'Content-Type: application/json' \
+        -d "{\"text\": \"✅ MongoDB backup completed: ${BACKUP_NAME} (${BACKUP_SIZE})\"}"
+    fi
+    
+    echo "[$(date)] Backup job finished successfully"
+---
+apiVersion: batch/v1
+kind: CronJob
+metadata:
+  name: mongodb-backup
+  namespace: tourism-chatbot
+spec:
+  # Run every 6 hours
+  schedule: "0 */6 * * *"
+  successfulJobsHistoryLimit: 3
+  failedJobsHistoryLimit: 3
+  concurrencyPolicy: Forbid
+  jobTemplate:
+    spec:
+      backoffLimit: 2
+      template:
+        metadata:
+          labels:
+            app: mongodb-backup
+        spec:
+          restartPolicy: OnFailure
+          serviceAccountName: backup-sa
+          containers:
+          - name: backup
+            image: mongo:6.0
+            command:
+            - /bin/bash
+            - /scripts/backup.sh
+            env:
+            - name: MONGODB_USER
+              valueFrom:
+                secretKeyRef:
+                  name: tourism-secrets
+                  key: mongodb-root-username
+            - name: MONGODB_PASS
+              valueFrom:
+                secretKeyRef:
+                  name: tourism-secrets
+                  key: mongodb-root-password
+            - name: DATABASE_NAME
+              value: "sri_lanka_tourism_bot"
+            - name: S3_BUCKET
+              valueFrom:
+                configMapKeyRef:
+                  name: tourism-configmap
+                  key: S3_BACKUP_BUCKET
+                  optional: true
+            - name: SLACK_WEBHOOK
+              valueFrom:
+                secretKeyRef:
+                  name: tourism-secrets
+                  key: slack-webhook-url
+                  optional: true
+            - name: AWS_ACCESS_KEY_ID
+              valueFrom:
+                secretKeyRef:
+                  name: aws-credentials
+                  key: access-key-id
+                  optional: true
+            - name: AWS_SECRET_ACCESS_KEY
+              valueFrom:
+                secretKeyRef:
+                  name: aws-credentials
+                  key: secret-access-key
+                  optional: true
+            - name: AWS_DEFAULT_REGION
+              value: "us-east-1"
+            volumeMounts:
+            - name: backup-scripts
+              mountPath: /scripts
+            - name: backup-storage
+              mountPath: /backups
+            resources:
+              requests:
+                memory: "512Mi"
+                cpu: "250m"
+              limits:
+                memory: "2Gi"
+                cpu: "1000m"
+          volumes:
+          - name: backup-scripts
+            configMap:
+              name: backup-scripts
+              defaultMode: 0755
+          - name: backup-storage
+            persistentVolumeClaim:
+              claimName: backup-pvc
+---
+apiVersion: v1
+kind: PersistentVolumeClaim
+metadata:
+  name: backup-pvc
+  namespace: tourism-chatbot
+spec:
+  accessModes:
+  - ReadWriteOnce
+  storageClassName: fast-ssd
+  resources:
+    requests:
+      storage: 100Gi
+---
+apiVersion: v1
+kind: ServiceAccount
+metadata:
+  name: backup-sa
+  namespace: tourism-chatbot
+---
+apiVersion: rbac.authorization.k8s.io/v1
+kind: Role
+metadata:
+  name: backup-role
+  namespace: tourism-chatbot
+rules:
+- apiGroups: [""]
+  resources: ["pods", "pods/log"]
+  verbs: ["get", "list"]
+---
+apiVersion: rbac.authorization.k8s.io/v1
+kind: RoleBinding
+metadata:
+  name: backup-rolebinding
+  namespace: tourism-chatbot
+subjects:
+- kind: ServiceAccount
+  name: backup-sa
+  namespace: tourism-chatbot
+roleRef:
+  kind: Role
+  name: backup-role
+  apiGroup: rbac.authorization.k8s.io
