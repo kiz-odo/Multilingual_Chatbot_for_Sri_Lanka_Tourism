@@ -22,6 +22,7 @@ import { useLanguageStore } from "@/store/language-store";
 import { useAuthStore } from "@/store/auth-store";
 import { getLocalizedText, formatCurrency } from "@/lib/utils";
 import { t } from "@/lib/i18n";
+import { getImageUrl, getAllImageUrls, getFallbackImageUrl } from "@/lib/image-utils";
 import apiClient from "@/lib/api-client";
 import { useMutation, useQueryClient } from "@tanstack/react-query";
 import { useToast } from "@/hooks/use-toast";
@@ -192,8 +193,20 @@ export default function AttractionDetailPage() {
     );
   }
 
-  const primaryImage = attraction.images?.find((img) => img.is_primary) || attraction.images?.[0];
-  const otherImages = attraction.images?.filter((img) => !img.is_primary) || [];
+  // Find primary image or first image
+  const primaryImageRaw = attraction.images?.find((img: any) => {
+    const imgObj = typeof img === 'object' ? img : { url: img };
+    return imgObj.is_primary;
+  }) || attraction.images?.[0];
+  
+  const primaryImageUrl = getImageUrl(primaryImageRaw) || getFallbackImageUrl(attraction.category, attraction.id);
+  
+  const otherImages = attraction.images?.filter((img: any) => {
+    const imgObj = typeof img === 'object' ? img : { url: img };
+    return !imgObj.is_primary;
+  }) || [];
+  
+  const otherImageUrls = getAllImageUrls(otherImages);
 
   return (
     <div className="container mx-auto px-4 sm:px-6 lg:px-8 py-8">
@@ -212,29 +225,53 @@ export default function AttractionDetailPage() {
         <div className="lg:col-span-2 space-y-6">
           {/* Image Gallery */}
           <div className="space-y-4">
-            {primaryImage && (
-              <div className="relative h-96 w-full overflow-hidden rounded-2xl">
-                <Image
-                  src={primaryImage.url}
-                  alt={getLocalizedText(primaryImage.alt_text, currentLanguage) || getLocalizedText(attraction.name, currentLanguage)}
-                  fill
-                  className="object-cover"
-                  priority
-                />
-              </div>
-            )}
-            {otherImages.length > 0 && (
+            <div className="relative h-96 w-full overflow-hidden rounded-2xl">
+              <Image
+                src={primaryImageUrl}
+                alt={getLocalizedText(
+                  typeof primaryImageRaw === 'object' && primaryImageRaw?.alt_text 
+                    ? primaryImageRaw.alt_text 
+                    : {}, 
+                  currentLanguage
+                ) || getLocalizedText(attraction.name, currentLanguage)}
+                fill
+                className="object-cover"
+                priority
+                onError={(e) => {
+                  const target = e.target as HTMLImageElement;
+                  target.style.display = 'none';
+                  const parent = target.parentElement;
+                  if (parent && !parent.querySelector('.image-placeholder')) {
+                    const placeholder = document.createElement('div');
+                    placeholder.className = 'image-placeholder h-full w-full bg-gradient-to-br from-teal-200 to-blue-200 flex items-center justify-center';
+                    placeholder.innerHTML = '<span class="text-gray-400">Image unavailable</span>';
+                    parent.appendChild(placeholder);
+                  }
+                }}
+              />
+            </div>
+            {otherImageUrls.length > 0 && (
               <div className="grid grid-cols-4 gap-4">
-                {otherImages.slice(0, 4).map((image, idx) => (
+                {otherImageUrls.slice(0, 4).map((imageUrl: string, idx: number) => (
                   <div
                     key={idx}
                     className="relative h-24 w-full overflow-hidden rounded-lg"
                   >
                     <Image
-                      src={image.url}
-                      alt={getLocalizedText(image.alt_text, currentLanguage) || `${getLocalizedText(attraction.name, currentLanguage)} - Image ${idx + 2}`}
+                      src={imageUrl}
+                      alt={`${getLocalizedText(attraction.name, currentLanguage)} - Image ${idx + 2}`}
                       fill
                       className="object-cover"
+                      onError={(e) => {
+                        const target = e.target as HTMLImageElement;
+                        target.style.display = 'none';
+                        const parent = target.parentElement;
+                        if (parent && !parent.querySelector('.image-placeholder')) {
+                          const placeholder = document.createElement('div');
+                          placeholder.className = 'image-placeholder h-full w-full bg-gray-200';
+                          parent.appendChild(placeholder);
+                        }
+                      }}
                     />
                   </div>
                 ))}

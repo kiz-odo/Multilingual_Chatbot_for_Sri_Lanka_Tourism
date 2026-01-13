@@ -39,7 +39,12 @@ async def get_attractions(
         featured_only=featured_only
     )
     
-    return [AttractionResponse(**attraction.dict()) for attraction in attractions]
+    result = []
+    for attraction in attractions:
+        data = attraction.dict()
+        data['id'] = str(attraction.id)
+        result.append(AttractionResponse(**data))
+    return result
 
 
 @router.get("/search", response_model=List[AttractionResponse])

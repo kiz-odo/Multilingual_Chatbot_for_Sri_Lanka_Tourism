@@ -211,7 +211,11 @@ app = FastAPI(
     redirect_slashes=False
 )
 
-# Add custom middleware (order matters!)
+# Add custom middleware (order matters! - Last added runs first)
+# Rate limiting should run early to block abusive requests
+from backend.app.middleware.rate_limit import setup_rate_limiting
+setup_rate_limiting(app)
+
 app.add_middleware(RequestIdMiddleware)  # Add request ID first
 app.add_middleware(GZipMiddleware, minimum_size=1000)  # Compress responses
 
@@ -227,7 +231,7 @@ app.add_middleware(SecurityHeadersMiddleware)
 # Add API versioning middleware
 app.add_middleware(APIVersioningMiddleware)
 
-# Add CORS middleware
+# Add CORS middleware LAST so it runs FIRST and handles OPTIONS preflight
 app.add_middleware(
     CORSMiddleware,
     allow_origins=settings.ALLOWED_ORIGINS,
@@ -236,10 +240,6 @@ app.add_middleware(
     allow_headers=["Accept", "Accept-Language", "Content-Type", "Authorization", "X-Request-ID", "X-API-Key"],
     expose_headers=["X-Request-ID", "X-RateLimit-Limit", "X-RateLimit-Remaining", "X-RateLimit-Reset"],
 )
-
-# Add rate limiting middleware (in-memory fallback if Redis unavailable)
-from backend.app.middleware.rate_limit import setup_rate_limiting
-setup_rate_limiting(app)
 
 # NOTE: Distributed rate limiting with Redis is configured in lifespan() function
 # The in-memory rate limiting above provides fallback protection
@@ -274,6 +274,24 @@ async def root():
         "docs": "/docs",
         "status": "active"
     }
+
+
+# Handle common frontend requests that shouldn't reach backend
+@app.get("/favicon.ico", include_in_schema=False)
+async def favicon():
+    """Return 204 No Content for favicon requests"""
+    from fastapi.responses import Response
+    return Response(status_code=204)
+
+
+@app.get("/_next/{path:path}", include_in_schema=False)
+async def next_static(path: str):
+    """Return 404 for Next.js static files (should be handled by frontend)"""
+    from fastapi.responses import JSONResponse
+    return JSONResponse(
+        status_code=404,
+        content={"detail": "Static assets should be served by frontend"}
+    )
 
 
 # Note: Health check endpoints are defined in api/v1/health.py

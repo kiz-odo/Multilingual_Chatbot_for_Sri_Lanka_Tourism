@@ -60,6 +60,10 @@ class APIVersioningMiddleware(BaseHTTPMiddleware):
     async def dispatch(
         self, request: Request, call_next: RequestResponseEndpoint
     ) -> Response:
+        # Skip versioning for OPTIONS (CORS preflight) requests
+        if request.method == "OPTIONS":
+            return await call_next(request)
+        
         # Extract requested version
         path = request.url.path
         requested_version = self._extract_version(path)

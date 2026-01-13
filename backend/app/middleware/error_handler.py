@@ -143,13 +143,15 @@ def add_error_handlers(app: FastAPI) -> None:
         """Handle HTTP exceptions"""
         request_id = getattr(request.state, "request_id", "unknown")
         
+        # Log with more detail including the actual path that caused 404
         logger.warning(
-            f"HTTP Exception: {exc.status_code} - {exc.detail}",
+            f"HTTP Exception: {exc.status_code} - {exc.detail} | Path: {request.method} {request.url.path}",
             extra={
                 "request_id": request_id,
                 "path": request.url.path,
                 "method": request.method,
-                "status_code": exc.status_code
+                "status_code": exc.status_code,
+                "query_params": str(request.query_params)
             }
         )
         

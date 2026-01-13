@@ -84,7 +84,7 @@ class Settings(BaseSettings):
     CELERY_RESULT_BACKEND: Optional[str] = None  # Defaults to REDIS_URL if not set
     
     # Rasa
-    RASA_ENABLED: bool = False  # Set to True if Rasa server is available
+    RASA_ENABLED: bool = True  # Set to True if Rasa server is available
     RASA_SERVER_URL: str = "http://localhost:5005"
     
     # Google Cloud APIs
@@ -127,9 +127,24 @@ class Settings(BaseSettings):
     
     # CORS - For API access and future frontend integration
     ALLOWED_ORIGINS: List[str] = [
-        "http://localhost:8000",
-        "http://127.0.0.1:8000"
+        "http://localhost:3000",  # Next.js frontend (default port)
+        "http://localhost:3001",  # Alternative frontend port
+        "http://127.0.0.1:3000",
+        "http://127.0.0.1:3001",
+        "http://localhost:8000",  # Backend docs (default port)
+        "http://127.0.0.1:8000",
+        "http://localhost:8001",  # Backend docs (alternative port)
+        "http://127.0.0.1:8001"
     ]
+    
+    @field_validator('ALLOWED_ORIGINS', mode='before')
+    @classmethod
+    def parse_allowed_origins(cls, v):
+        """Parse ALLOWED_ORIGINS from comma-separated string or list"""
+        if isinstance(v, str):
+            # Split by comma and strip whitespace
+            return [origin.strip() for origin in v.split(',') if origin.strip()]
+        return v
     
     # Supported Languages
     SUPPORTED_LANGUAGES: List[str] = [
@@ -154,7 +169,7 @@ class Settings(BaseSettings):
     LLM_FALLBACK_PROVIDER_2: str = "mistral"  # Fallback 2: Mistral AI (FREE)
     
     # CrewAI Multi-Agent Configuration
-    USE_CREWAI: bool = False  # Enable/disable CrewAI multi-agent orchestration
+    USE_CREWAI: bool = True  # Enable/disable CrewAI multi-agent orchestration
     CREWAI_VERBOSE: bool = False  # Enable verbose logging for CrewAI agents
     
     # Google Gemini API (Primary)
@@ -221,6 +236,16 @@ class Settings(BaseSettings):
     # Request Configuration
     MAX_REQUEST_SIZE: int = 10 * 1024 * 1024  # 10MB max request body size
     REQUEST_TIMEOUT_SECONDS: int = 30  # Default request timeout
+    
+    # Service Timeouts (in seconds) - Prevent frontend chat timeouts
+    RASA_TIMEOUT: int = 5  # Rasa NLU timeout
+    LLM_TIMEOUT: int = 30  # LLM API call timeout (Gemini/Qwen/Mistral)
+    TAVILY_TIMEOUT: int = 10  # Tavily Search timeout
+    CREWAI_TIMEOUT: int = 45  # CrewAI multi-agent processing timeout
+    CHAT_TOTAL_TIMEOUT: int = 90  # Maximum total time for chat response (must be < frontend timeout)
+    
+    # Feature Flags
+    ENABLE_RESPONSE_CACHING: bool = True  # Enable caching for faster responses
     
     # Database Connection Pooling
     MONGODB_MAX_POOL_SIZE: int = 50  # Maximum connections in pool

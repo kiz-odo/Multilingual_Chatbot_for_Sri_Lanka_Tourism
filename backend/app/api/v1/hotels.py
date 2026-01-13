@@ -34,7 +34,13 @@ async def get_hotels(
         query = query.find(Hotel.location.city == city)
     
     hotels = await query.sort(-Hotel.popularity_score).skip(skip).limit(limit).to_list()
-    return [HotelResponse(**hotel.dict()) for hotel in hotels]
+    
+    result = []
+    for hotel in hotels:
+        data = hotel.dict()
+        data['id'] = str(hotel.id)
+        result.append(HotelResponse(**data))
+    return result
 
 
 @router.get("/search", response_model=List[HotelResponse])
@@ -61,7 +67,31 @@ async def search_hotels(
         query = query.find({"name.en": {"$regex": q, "$options": "i"}})
     
     hotels = await query.sort(-Hotel.popularity_score).limit(limit).to_list()
-    return [HotelResponse(**hotel.dict()) for hotel in hotels]
+    
+    result = []
+    for hotel in hotels:
+        data = hotel.dict()
+        data['id'] = str(hotel.id)
+        result.append(HotelResponse(**data))
+    return result
+
+
+@router.get("/featured", response_model=List[HotelResponse])
+async def get_featured_hotels(
+    limit: int = Query(6, ge=1, le=20),
+    language: str = "en"
+):
+    """Get featured hotels"""
+    hotels = await Hotel.find(
+        {"is_active": True, "is_featured": True}
+    ).sort([("-popularity_score", -1)]).limit(limit).to_list()
+    
+    result = []
+    for hotel in hotels:
+        data = hotel.dict()
+        data['id'] = str(hotel.id)
+        result.append(HotelResponse(**data))
+    return result
 
 
 @router.get("/{hotel_id}", response_model=HotelResponse)

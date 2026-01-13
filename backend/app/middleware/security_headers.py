@@ -18,6 +18,10 @@ class SecurityHeadersMiddleware(BaseHTTPMiddleware):
     """Add security headers to all responses"""
     
     async def dispatch(self, request: Request, call_next):
+        # Skip security headers for OPTIONS (CORS preflight) requests
+        if request.method == "OPTIONS":
+            return await call_next(request)
+        
         response = await call_next(request)
         
         # Prevent MIME type sniffing

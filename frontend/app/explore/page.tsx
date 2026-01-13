@@ -4,7 +4,7 @@ import * as React from "react";
 import { useQuery } from "@tanstack/react-query";
 import Link from "next/link";
 import Image from "next/image";
-import { useRouter } from "next/navigation";
+import { useRouter, usePathname } from "next/navigation";
 import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
 import {
@@ -20,13 +20,18 @@ import {
   Umbrella,
   Mountain,
   Landmark,
+  Hotel as HotelIcon,
+  UtensilsCrossed,
+  Calendar,
 } from "lucide-react";
 import { useLanguageStore } from "@/store/language-store";
 import { getLocalizedText } from "@/lib/i18n";
+import { getImageUrl, getFallbackImageUrl } from "@/lib/image-utils";
 import apiClient from "@/lib/api-client";
-import type { Attraction } from "@/types";
+import type { Attraction, Hotel, Restaurant, Event } from "@/types";
 
 type Category = "all" | "historical" | "wildlife" | "beaches" | "adventure" | "cultural";
+type ExploreType = "attractions" | "hotels" | "restaurants" | "events";
 
 const categories = [
   { id: "all", label: "All", icon: null },
@@ -36,9 +41,17 @@ const categories = [
   { id: "adventure", label: "Adventure", icon: Mountain },
 ];
 
+const exploreTabs = [
+  { id: "attractions", label: "Attractions", icon: Landmark, path: "/explore" },
+  { id: "hotels", label: "Hotels", icon: HotelIcon, path: "/explore/hotels" },
+  { id: "restaurants", label: "Restaurants", icon: UtensilsCrossed, path: "/explore/restaurants" },
+  { id: "events", label: "Events", icon: Calendar, path: "/explore/events" },
+];
+
 export default function ExplorePage() {
   const { currentLanguage } = useLanguageStore();
   const router = useRouter();
+  const pathname = usePathname();
   const [searchQuery, setSearchQuery] = React.useState("");
   const [selectedCategory, setSelectedCategory] = React.useState<Category>("all");
   const [selectedLocation, setSelectedLocation] = React.useState("any");
@@ -46,9 +59,17 @@ export default function ExplorePage() {
   const [displayLimit, setDisplayLimit] = React.useState(6);
   const [favorites, setFavorites] = React.useState<Set<string>>(new Set());
 
-  // Fetch attractions
+  // Determine current explore type from pathname
+  const currentType: ExploreType = React.useMemo(() => {
+    if (pathname.includes("/hotels")) return "hotels";
+    if (pathname.includes("/restaurants")) return "restaurants";
+    if (pathname.includes("/events")) return "events";
+    return "attractions";
+  }, [pathname]);
+
+  // Fetch data based on current type
   const { data, isLoading, refetch, error } = useQuery({
-    queryKey: ["attractions", selectedCategory, selectedLocation, selectedRating, currentLanguage, displayLimit],
+    queryKey: [currentType, selectedCategory, selectedLocation, selectedRating, currentLanguage, displayLimit],
     queryFn: async () => {
       try {
         const params: any = {
@@ -56,21 +77,38 @@ export default function ExplorePage() {
           language: currentLanguage,
         };
 
-        if (selectedCategory !== "all") {
-          params.category = selectedCategory;
-        }
-
         if (selectedLocation !== "any") {
           params.city = selectedLocation;
         }
 
-        const response = await apiClient.attractions.list(params);
-        return response.data || [];
+        if (currentType === "attractions") {
+          if (selectedCategory !== "all") {
+            params.category = selectedCategory;
+          }
+          const response = await apiClient.attractions.list(params);
+          return response.data || [];
+        } else if (currentType === "hotels") {
+          if (selectedRating !== "any") {
+            params.star_rating = parseInt(selectedRating);
+          }
+          const response = await apiClient.hotels.list(params);
+          return response.data || [];
+        } else if (currentType === "restaurants") {
+          if (selectedCategory !== "all") {
+            params.cuisine_type = selectedCategory;
+          }
+          const response = await apiClient.restaurants.list(params);
+          return response.data || [];
+        } else if (currentType === "events") {
+          if (selectedCategory !== "all") {
+            params.category = selectedCategory;
+          }
+          const response = await apiClient.events.list(params);
+          return response.data || [];
+        }
+        return [];
       } catch (error: any) {
-        console.error("Failed to fetch attractions:", error);
-        
-        // Return empty array on network error to prevent UI crash
-        // The error will be handled by the error state below
+        console.error(`Failed to fetch ${currentType}:`, error);
         if (error?.code === "ERR_NETWORK" || error?.message === "Network Error") {
           console.warn("Network error - API may be unavailable. Using fallback data.");
           return [];
@@ -78,27 +116,47 @@ export default function ExplorePage() {
         throw error;
       }
     },
+    enabled: true,
     retry: 2,
     retryDelay: 1000,
-    staleTime: 5 * 60 * 1000, // 5 minutes
+    staleTime: 5 * 60 * 1000,
   });
 
-  // Search attractions
+  // Search data based on current type
   const { data: searchResults, isLoading: isSearching } = useQuery({
-    queryKey: ["attractions-search", searchQuery, currentLanguage],
+    queryKey: [`${currentType}-search`, searchQuery, currentLanguage],
     queryFn: async () => {
       if (!searchQuery.trim()) return null;
       try {
-        const response = await apiClient.attractions.search({
-          q: searchQuery,
-          category: selectedCategory !== "all" ? selectedCategory : undefined,
-          language: currentLanguage,
-          limit: 50,
-        } as any);
-        return response.data || [];
+        if (currentType === "attractions") {
+          const response = await apiClient.attractions.search({
+            q: searchQuery,
+            category: selectedCategory !== "all" ? selectedCategory : undefined,
+            language: currentLanguage,
+            limit: 50,
+          } as any);
+          return response.data || [];
+        } else if (currentType === "hotels") {
+          const response = await apiClient.hotels.search({
+            city: selectedLocation !== "any" ? selectedLocation : undefined,
+          } as any);
+          return response.data || [];
+        } else if (currentType === "restaurants") {
+          const response = await apiClient.restaurants.search({
+            q: searchQuery,
+            city: selectedLocation !== "any" ? selectedLocation : undefined,
+          } as any);
+          return response.data || [];
+        } else if (currentType === "events") {
+          const response = await apiClient.events.search({
+            q: searchQuery,
+            city: selectedLocation !== "any" ? selectedLocation : undefined,
+          } as any);
+          return response.data || [];
+        }
+        return [];
       } catch (error: any) {
-        console.error("Failed to search attractions:", error);
-        // Return empty array on network error
+        console.error(`Failed to search ${currentType}:`, error);
         if (error?.code === "ERR_NETWORK" || error?.message === "Network Error") {
           console.warn("Network error during search - API may be unavailable.");
           return [];
@@ -111,8 +169,8 @@ export default function ExplorePage() {
     retryDelay: 500,
   });
 
-  const attractions: Attraction[] = searchQuery.trim() ? (searchResults || []) : (data || []);
-  const totalResults = 124; // This would come from backend in production
+  const items: (Attraction | Hotel | Restaurant | Event)[] = searchQuery.trim() ? (searchResults || []) : (data || []);
+  const totalResults = items.length || 0;
 
   const handleSearch = (e: React.FormEvent) => {
     e.preventDefault();
@@ -173,47 +231,6 @@ export default function ExplorePage() {
         </div>
       )}
 
-      {/* Top Header Bar */}
-      <div className="bg-white border-b border-gray-200 px-4 md:px-8 py-4">
-        <div className="max-w-7xl mx-auto flex items-center justify-between">
-          {/* Left: Logo */}
-          <Link href="/" className="text-xl font-bold text-blue-600">
-            Sri Lanka Tourism
-          </Link>
-
-          {/* Middle: Navigation */}
-          <div className="hidden md:flex items-center gap-6">
-            <Link href="/" className="text-gray-700 hover:text-blue-600 transition-colors">
-              Home
-            </Link>
-            <Link
-              href="/explore"
-              className="text-blue-600 border-b-2 border-blue-600 pb-1 font-medium"
-            >
-              Attractions
-            </Link>
-            <Link href="/planner" className="text-gray-700 hover:text-blue-600 transition-colors">
-              Plan Trip
-            </Link>
-            <Link href="/contact" className="text-gray-700 hover:text-blue-600 transition-colors">
-              Contact
-            </Link>
-          </div>
-
-          {/* Right: Dark Mode & Login */}
-          <div className="flex items-center gap-4">
-            <button className="p-2 hover:bg-gray-100 rounded-full transition-colors">
-              <Moon className="w-5 h-5 text-gray-600" />
-            </button>
-            <Link href="/auth/login">
-              <Button className="bg-blue-600 hover:bg-blue-700 text-white">
-                Login
-              </Button>
-            </Link>
-          </div>
-        </div>
-      </div>
-
       {/* Hero Section */}
       <div className="relative h-[500px] md:h-[600px] overflow-hidden">
         <div className="absolute inset-0">
@@ -259,77 +276,111 @@ export default function ExplorePage() {
         </div>
       </div>
 
-      {/* Category and Filter Bar */}
+      {/* Tabs and Filter Bar */}
       <div className="bg-white border-b border-gray-200 px-4 md:px-8 lg:px-12 py-4">
-        <div className="max-w-7xl mx-auto flex flex-col md:flex-row items-center justify-between gap-4">
-          {/* Left: Categories */}
-          <div className="flex items-center gap-4 flex-wrap">
-            <span className="text-sm font-medium text-gray-700">Categories:</span>
-            <div className="flex gap-2 flex-wrap">
-              {categories.map((category) => {
-                const Icon = category.icon;
-                const isActive = selectedCategory === category.id;
-                return (
-                  <button
-                    key={category.id}
-                    onClick={() => setSelectedCategory(category.id as Category)}
-                    className={`flex items-center gap-2 px-4 py-2 rounded-full text-sm font-medium transition-colors ${
-                      isActive
-                        ? "bg-blue-600 text-white"
-                        : "bg-gray-100 text-gray-700 hover:bg-gray-200"
-                    }`}
-                  >
-                    {Icon && <Icon className="w-4 h-4" />}
-                    {category.label}
-                  </button>
-                );
-              })}
-            </div>
+        <div className="max-w-7xl mx-auto">
+          {/* Tabs */}
+          <div className="flex items-center gap-2 mb-4 border-b border-gray-200">
+            {exploreTabs.map((tab) => {
+              const Icon = tab.icon;
+              const isActive = pathname === tab.path || (tab.path === "/explore" && pathname === "/explore");
+              return (
+                <Link
+                  key={tab.id}
+                  href={tab.path}
+                  className={`flex items-center gap-2 px-4 py-3 text-sm font-medium transition-colors border-b-2 ${
+                    isActive
+                      ? "border-blue-600 text-blue-600"
+                      : "border-transparent text-gray-600 hover:text-gray-900 hover:border-gray-300"
+                  }`}
+                >
+                  {Icon && <Icon className="w-4 h-4" />}
+                  {tab.label}
+                </Link>
+              );
+            })}
           </div>
 
-          {/* Right: Filters */}
-          <div className="flex gap-3">
-            <div className="relative">
-              <select
-                value={selectedLocation}
-                onChange={(e) => setSelectedLocation(e.target.value)}
-                className="appearance-none bg-white border border-gray-300 rounded-lg px-4 py-2 pr-8 text-sm focus:outline-none focus:ring-2 focus:ring-blue-500"
-              >
-                <option value="any">Any Location</option>
-                <option value="Colombo">Colombo</option>
-                <option value="Kandy">Kandy</option>
-                <option value="Galle">Galle</option>
-                <option value="Sigiriya">Sigiriya</option>
-                <option value="Ella">Ella</option>
-                <option value="Matale">Matale</option>
-              </select>
-              <MapPin className="absolute right-2 top-1/2 transform -translate-y-1/2 w-4 h-4 text-gray-400 pointer-events-none" />
-            </div>
+          {/* Filters */}
+          <div className="flex flex-col md:flex-row items-center justify-between gap-4">
+            {/* Left: Categories */}
+            {currentType === "attractions" && (
+              <div className="flex items-center gap-4 flex-wrap">
+                <span className="text-sm font-medium text-gray-700">Categories:</span>
+                <div className="flex gap-2 flex-wrap">
+                  {categories.map((category) => {
+                    const Icon = category.icon;
+                    const isActive = selectedCategory === category.id;
+                    return (
+                      <button
+                        key={category.id}
+                        onClick={() => setSelectedCategory(category.id as Category)}
+                        className={`flex items-center gap-2 px-4 py-2 rounded-full text-sm font-medium transition-colors ${
+                          isActive
+                            ? "bg-blue-600 text-white"
+                            : "bg-gray-100 text-gray-700 hover:bg-gray-200"
+                        }`}
+                      >
+                        {Icon && <Icon className="w-4 h-4" />}
+                        {category.label}
+                      </button>
+                    );
+                  })}
+                </div>
+              </div>
+            )}
 
-            <div className="relative">
-              <select
-                value={selectedRating}
-                onChange={(e) => setSelectedRating(e.target.value)}
-                className="appearance-none bg-white border border-gray-300 rounded-lg px-4 py-2 pr-8 text-sm focus:outline-none focus:ring-2 focus:ring-blue-500"
-              >
-                <option value="any">Any Rating</option>
-                <option value="4.5">4.5+ Stars</option>
-                <option value="4.0">4.0+ Stars</option>
-                <option value="3.5">3.5+ Stars</option>
-              </select>
-              <Star className="absolute right-2 top-1/2 transform -translate-y-1/2 w-4 h-4 text-gray-400 pointer-events-none" />
+            {/* Right: Filters */}
+            <div className="flex gap-3">
+              <div className="relative">
+                <select
+                  value={selectedLocation}
+                  onChange={(e) => setSelectedLocation(e.target.value)}
+                  className="appearance-none bg-white border border-gray-300 rounded-lg px-4 py-2 pr-8 text-sm focus:outline-none focus:ring-2 focus:ring-blue-500"
+                >
+                  <option value="any">Any Location</option>
+                  <option value="Colombo">Colombo</option>
+                  <option value="Kandy">Kandy</option>
+                  <option value="Galle">Galle</option>
+                  <option value="Sigiriya">Sigiriya</option>
+                  <option value="Ella">Ella</option>
+                  <option value="Matale">Matale</option>
+                </select>
+                <MapPin className="absolute right-2 top-1/2 transform -translate-y-1/2 w-4 h-4 text-gray-400 pointer-events-none" />
+              </div>
+
+              {(currentType === "attractions" || currentType === "hotels") && (
+                <div className="relative">
+                  <select
+                    value={selectedRating}
+                    onChange={(e) => setSelectedRating(e.target.value)}
+                    className="appearance-none bg-white border border-gray-300 rounded-lg px-4 py-2 pr-8 text-sm focus:outline-none focus:ring-2 focus:ring-blue-500"
+                  >
+                    <option value="any">{currentType === "hotels" ? "Any Stars" : "Any Rating"}</option>
+                    <option value="4.5">4.5+ {currentType === "hotels" ? "Stars" : "Stars"}</option>
+                    <option value="4.0">4.0+ {currentType === "hotels" ? "Stars" : "Stars"}</option>
+                    <option value="3.5">3.5+ {currentType === "hotels" ? "Stars" : "Stars"}</option>
+                  </select>
+                  <Star className="absolute right-2 top-1/2 transform -translate-y-1/2 w-4 h-4 text-gray-400 pointer-events-none" />
+                </div>
+              )}
             </div>
           </div>
         </div>
       </div>
 
-      {/* Popular Destinations Section */}
+      {/* Content Section */}
       <div className="px-4 md:px-8 lg:px-12 py-8">
         <div className="max-w-7xl mx-auto">
           <div className="flex items-center justify-between mb-6">
-            <h2 className="text-2xl md:text-3xl font-bold text-gray-900">Popular Destinations</h2>
+            <h2 className="text-2xl md:text-3xl font-bold text-gray-900">
+              {currentType === "attractions" && "Popular Destinations"}
+              {currentType === "hotels" && "Hotels"}
+              {currentType === "restaurants" && "Restaurants"}
+              {currentType === "events" && "Events"}
+            </h2>
             <p className="text-gray-600 text-sm md:text-base">
-              Showing {attractions.length} of {totalResults} results
+              Showing {items.length} of {totalResults} results
             </p>
           </div>
 
@@ -346,11 +397,11 @@ export default function ExplorePage() {
                 </div>
               ))}
             </div>
-          ) : error && attractions.length === 0 ? (
+          ) : error && items.length === 0 ? (
             <div className="bg-white rounded-xl shadow-sm p-12 text-center">
               <MessageCircle className="w-16 h-16 text-gray-300 mx-auto mb-4" />
               <h3 className="text-xl font-semibold text-gray-900 mb-2">
-                Unable to Load Attractions
+                Unable to Load {currentType.charAt(0).toUpperCase() + currentType.slice(1)}
               </h3>
               <p className="text-gray-600 mb-4">
                 There was a problem connecting to the server. Please check your connection and try again.
@@ -359,45 +410,91 @@ export default function ExplorePage() {
                 Retry
               </Button>
             </div>
-          ) : attractions.length === 0 ? (
+          ) : items.length === 0 ? (
             <div className="bg-white rounded-xl shadow-sm p-12 text-center">
-              <p className="text-gray-500">No attractions found. Try adjusting your filters.</p>
+              <p className="text-gray-500">No {currentType} found. Try adjusting your filters.</p>
             </div>
           ) : (
             <>
               <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
-                {attractions.slice(0, displayLimit).map((attraction) => {
-                  const categoryBadge = getCategoryBadge(attraction.category || "historical");
-                  const isFavorite = favorites.has(attraction.id);
+                {items.slice(0, displayLimit).map((item) => {
+                  const isFavorite = favorites.has(item.id);
+                  let name: any, description: any, location: any, images: any;
+                  let detailPath = "";
+                  let badgeText = "";
+
+                  if (currentType === "attractions") {
+                    const attraction = item as Attraction;
+                    name = attraction.name;
+                    description = attraction.description;
+                    location = attraction.location;
+                    images = attraction.images;
+                    badgeText = getCategoryBadge(attraction.category || "historical");
+                    detailPath = `/explore/attractions/${attraction.id}`;
+                  } else if (currentType === "hotels") {
+                    const hotel = item as Hotel;
+                    name = hotel.name;
+                    description = hotel.description;
+                    location = hotel.location;
+                    images = hotel.images;
+                    badgeText = `${hotel.star_rating || 0} Stars`;
+                    detailPath = `/explore/hotels/${hotel.id}`;
+                  } else if (currentType === "restaurants") {
+                    const restaurant = item as Restaurant;
+                    name = restaurant.name;
+                    description = restaurant.description;
+                    location = restaurant.location;
+                    images = restaurant.images;
+                    badgeText = restaurant.cuisine_type || "RESTAURANT";
+                    detailPath = `/explore/restaurants/${restaurant.id}`;
+                  } else if (currentType === "events") {
+                    const event = item as Event;
+                    name = event.name;
+                    description = event.description;
+                    location = event.location;
+                    images = event.images;
+                    badgeText = event.category || "EVENT";
+                    detailPath = `/explore/events/${event.id}`;
+                  }
+
+                  const imageUrl = getImageUrl(images?.[0]) || getFallbackImageUrl(currentType, item.id);
+                  const itemName = getLocalizedText(name, currentLanguage) || currentType.slice(0, -1);
 
                   return (
                     <div
-                      key={attraction.id}
+                      key={item.id}
                       className="bg-white rounded-xl shadow-sm overflow-hidden hover:shadow-lg transition-shadow"
                     >
                       {/* Image */}
                       <div className="relative h-48">
-                        {attraction.images?.[0]?.url ? (
-                          <Image
-                            src={attraction.images[0].url}
-                            alt={getLocalizedText(attraction.name, currentLanguage) || "Attraction"}
-                            fill
-                            className="object-cover"
-                          />
-                        ) : (
-                          <div className="h-full w-full bg-gradient-to-br from-teal-200 to-blue-200" />
-                        )}
+                        <Image
+                          src={imageUrl}
+                          alt={itemName}
+                          fill
+                          className="object-cover"
+                          onError={(e) => {
+                            const target = e.target as HTMLImageElement;
+                            target.style.display = 'none';
+                            const parent = target.parentElement;
+                            if (parent && !parent.querySelector('.image-placeholder')) {
+                              const placeholder = document.createElement('div');
+                              placeholder.className = 'image-placeholder h-full w-full bg-gradient-to-br from-teal-200 to-blue-200 flex items-center justify-center';
+                              placeholder.innerHTML = '<span class="text-gray-400 text-sm">Image unavailable</span>';
+                              parent.appendChild(placeholder);
+                            }
+                          }}
+                        />
 
-                        {/* Category Badge */}
+                        {/* Badge */}
                         <div className="absolute top-3 left-3">
                           <Badge className="bg-teal-500 text-white font-semibold text-xs">
-                            {categoryBadge}
+                            {badgeText}
                           </Badge>
                         </div>
 
                         {/* Favorite Button */}
                         <button
-                          onClick={() => toggleFavorite(attraction.id)}
+                          onClick={() => toggleFavorite(item.id)}
                           className="absolute top-3 right-3 p-2 bg-white/90 hover:bg-white rounded-full transition-colors"
                           aria-label="Toggle favorite"
                         >
@@ -412,31 +509,43 @@ export default function ExplorePage() {
                       {/* Content */}
                       <div className="p-4">
                         <h3 className="text-lg font-bold mb-1 line-clamp-1">
-                          {getLocalizedText(attraction.name, currentLanguage)}
+                          {itemName}
                         </h3>
 
                         <div className="flex items-center text-sm text-gray-600 mb-2">
                           <MapPin className="w-4 h-4 mr-1" />
-                          {attraction.location?.city || attraction.location?.province || "Sri Lanka"}
-                          {attraction.location?.district && `, ${attraction.location.district}`}
+                          {location?.city || "Sri Lanka"}
                         </div>
 
-                        <div className="flex items-center gap-1 mb-3">
-                          <Star className="w-4 h-4 fill-yellow-400 text-yellow-400" />
-                          <span className="text-sm font-medium text-gray-700">
-                            {formatRating(attraction.average_rating, attraction.total_reviews)}
-                          </span>
-                        </div>
+                        {(currentType === "attractions" || currentType === "hotels" || currentType === "restaurants") && (
+                          <div className="flex items-center gap-1 mb-3">
+                            <Star className="w-4 h-4 fill-yellow-400 text-yellow-400" />
+                            <span className="text-sm font-medium text-gray-700">
+                              {currentType === "attractions" 
+                                ? formatRating((item as Attraction).average_rating, (item as Attraction).total_reviews)
+                                : currentType === "hotels"
+                                ? `${(item as Hotel).star_rating || 0} Stars`
+                                : `${(item as Restaurant).rating || 0} Stars`
+                              }
+                            </span>
+                          </div>
+                        )}
+
+                        {currentType === "hotels" && (item as Hotel).price_per_night && (
+                          <div className="text-sm font-semibold text-blue-600 mb-2">
+                            LKR {(item as Hotel).price_per_night}/night
+                          </div>
+                        )}
 
                         <p className="text-sm text-gray-600 mb-4 line-clamp-2">
-                          {getLocalizedText(attraction.description, currentLanguage)}
+                          {getLocalizedText(description, currentLanguage)}
                         </p>
 
                         <div className="flex gap-2">
                           <Button
                             variant="outline"
                             className="flex-1 border-blue-600 text-blue-600 hover:bg-blue-50"
-                            onClick={() => router.push(`/explore/attractions/${attraction.id}`)}
+                            onClick={() => router.push(detailPath)}
                           >
                             Details
                           </Button>
@@ -444,9 +553,7 @@ export default function ExplorePage() {
                             className="flex-1 bg-blue-600 hover:bg-blue-700 text-white"
                             onClick={() =>
                               router.push(
-                                `/chat?query=${encodeURIComponent(
-                                  getLocalizedText(attraction.name, currentLanguage) || ""
-                                )}`
+                                `/chat?query=${encodeURIComponent(itemName)}`
                               )
                             }
                           >
@@ -461,14 +568,14 @@ export default function ExplorePage() {
               </div>
 
               {/* Load More Button */}
-              {attractions.length >= displayLimit && (
+              {items.length >= displayLimit && (
                 <div className="text-center mt-8">
                   <Button
                     variant="outline"
                     onClick={() => setDisplayLimit((prev) => prev + 6)}
                     className="px-6"
                   >
-                    Load More Attractions
+                    Load More {currentType.charAt(0).toUpperCase() + currentType.slice(1)}
                     <ChevronDown className="w-4 h-4 ml-2" />
                   </Button>
                 </div>
@@ -477,24 +584,6 @@ export default function ExplorePage() {
           )}
         </div>
       </div>
-
-      {/* Footer */}
-      <footer className="bg-blue-50 border-t border-blue-100 px-4 md:px-8 lg:px-12 py-6">
-        <div className="max-w-7xl mx-auto flex flex-col md:flex-row items-center justify-between gap-4">
-          <div className="flex items-center gap-2">
-            <div className="w-6 h-6 bg-gradient-to-br from-blue-500 to-green-500 rounded"></div>
-            <span className="text-sm text-gray-700">© 2024 Sri Lanka Tourism</span>
-          </div>
-          <div className="flex gap-4 text-sm text-gray-600">
-            <Link href="/privacy" className="hover:text-gray-900">
-              Privacy Policy
-            </Link>
-            <Link href="/terms" className="hover:text-gray-900">
-              Terms & Conditions
-            </Link>
-          </div>
-        </div>
-      </footer>
 
       {/* Floating Chat Assistant Button */}
       <Link href="/chat">

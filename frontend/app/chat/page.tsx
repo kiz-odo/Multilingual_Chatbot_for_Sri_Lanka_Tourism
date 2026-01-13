@@ -43,7 +43,7 @@ import { useLanguageStore } from "@/store/language-store";
 import { useRouter } from "next/navigation";
 import Link from "next/link";
 import apiClient from "@/lib/api-client";
-import type { ChatMessage } from "@/types";
+import type { ChatMessage, Language } from "@/types";
 import { format, isToday, isYesterday, isThisWeek, subDays } from "date-fns";
 import { VoiceInput } from "@/components/features/voice-input";
 import { useWebSocket } from "@/hooks/use-websocket";
@@ -222,13 +222,56 @@ export default function ChatPage() {
   // Send message mutation
   const sendMessageMutation = useMutation({
     mutationFn: async (messageText: string) => {
-      const response = await apiClient.chat.sendMessage({
-        message: messageText,
-        user_id: userId,
-        language: currentLanguage,
-        session_id: sessionId,
-      });
-      return response.data;
+      // Trim and validate message before sending
+      const trimmedMessage = messageText.trim();
+      if (!trimmedMessage) {
+        throw new Error("Message cannot be empty");
+      }
+      
+      // Validate message length (backend max is 5000)
+      if (trimmedMessage.length > 5000) {
+        throw new Error("Message is too long. Maximum length is 5000 characters.");
+      }
+      
+      // Build request payload as a plain object - ensure it's serializable
+      const payload: {
+        message: string;
+        language?: string;
+        session_id?: string;
+      } = {
+        message: trimmedMessage,
+      };
+      
+      // Only add optional fields if they have valid, non-empty values
+      const trimmedLanguage = currentLanguage?.trim();
+      if (trimmedLanguage && trimmedLanguage.length > 0) {
+        payload.language = trimmedLanguage;
+      }
+      
+      const trimmedSessionId = sessionId?.trim();
+      if (trimmedSessionId && trimmedSessionId.length > 0) {
+        payload.session_id = trimmedSessionId;
+      }
+      
+      // Ensure payload is a plain object (not a class instance)
+      const plainPayload = JSON.parse(JSON.stringify(payload));
+      
+      // Debug logging (development only)
+      if (process.env.NODE_ENV === 'development') {
+        console.log("Sending chat message:", {
+          messageLength: plainPayload.message?.length,
+          language: plainPayload.language,
+          hasSessionId: !!plainPayload.session_id,
+        });
+      }
+      
+      try {
+        const response = await apiClient.chat.sendMessage(plainPayload);
+        return response.data;
+      } catch (error: unknown) {
+        // Re-throw to be handled by onError (which has proper error extraction)
+        throw error;
+      }
     },
     onSuccess: (data) => {
       // Update session ID if conversation ID is returned
@@ -255,8 +298,82 @@ export default function ChatPage() {
       inputRef.current?.focus();
       queryClient.invalidateQueries({ queryKey: ["chat-conversations", userId] });
     },
-    onError: (error) => {
-      console.error("Failed to send message:", error);
+    onError: (error: unknown) => {
+      // Extract detailed error message from various error formats
+      let errorMessage = "Failed to send message. Please try again.";
+      
+      // Type guard and error extraction
+      if (error && typeof error === 'object') {
+        const err = error as any;
+        
+        // Try to get error data from various possible locations
+        let errorData: any = null;
+        
+        if (err.response?.data) {
+          errorData = err.response.data;
+        } else if (err.data) {
+          errorData = err.data;
+        }
+        
+        // Parse error data to extract meaningful message
+        if (errorData) {
+          // Handle FastAPI validation errors (422) - custom error handler format
+          if (errorData.error?.details?.errors) {
+            const validationErrors = errorData.error.details.errors
+              .map((e: any) => {
+                const field = e.field || 'field';
+                return `${field}: ${e.message || 'Invalid value'}`;
+              })
+              .join(', ');
+            errorMessage = `Validation error: ${validationErrors}`;
+          } 
+          // Custom error handler message
+          else if (errorData.error?.message) {
+            errorMessage = errorData.error.message;
+          } 
+          // Standard FastAPI validation error format
+          else if (errorData.detail) {
+            if (Array.isArray(errorData.detail)) {
+              // Multiple validation errors
+              const validationErrors = errorData.detail
+                .map((e: any) => {
+                  const field = e.loc?.join('.') || 'field';
+                  return `${field}: ${e.msg || e.message || 'Invalid value'}`;
+                })
+                .join(', ');
+              errorMessage = `Validation error: ${validationErrors}`;
+            } else if (typeof errorData.detail === 'string') {
+              // Single error message
+              errorMessage = errorData.detail;
+            } else if (errorData.detail.message) {
+              errorMessage = errorData.detail.message;
+            }
+          } 
+          // Generic message field
+          else if (errorData.message) {
+            errorMessage = errorData.message;
+          }
+        } 
+        // Fallback to error.message
+        else if (err.message) {
+          errorMessage = err.message;
+        }
+      } 
+      // Handle string errors
+      else if (typeof error === 'string') {
+        errorMessage = error;
+      }
+      
+      // Add error message to chat
+      const errorChatMessage: ChatMessage = {
+        id: `error-${Date.now()}`,
+        message: message,
+        response: `⚠️ ${errorMessage}`,
+        language: currentLanguage,
+        timestamp: new Date().toISOString(),
+      };
+      setMessages((prev) => [...prev, errorChatMessage]);
+      setMessage(""); // Clear input so user can retry
     },
   });
 
@@ -319,7 +436,9 @@ export default function ChatPage() {
       }
       queryClient.invalidateQueries({ queryKey: ["chat-conversations", userId] });
     } catch (error) {
-      console.error("Failed to delete conversation:", error);
+      if (process.env.NODE_ENV === 'development') {
+        console.error("Failed to delete conversation:", error);
+      }
     }
   };
 
@@ -394,7 +513,9 @@ export default function ChatPage() {
         queryClient.invalidateQueries({ queryKey: ["chat-conversations", userId] });
       }
     } catch (error) {
-      console.error("Failed to upload image:", error);
+      if (process.env.NODE_ENV === 'development') {
+        console.error("Failed to upload image:", error);
+      }
       alert("Failed to upload image. Please try again.");
     }
   };
@@ -409,7 +530,7 @@ export default function ChatPage() {
     return langMap[currentLanguage] || "en-US";
   };
 
-  const languages = [
+  const languages: { code: Language; name: string }[] = [
     { code: "en", name: "English (US)" },
     { code: "si", name: "සිංහල" },
     { code: "ta", name: "தமிழ்" },

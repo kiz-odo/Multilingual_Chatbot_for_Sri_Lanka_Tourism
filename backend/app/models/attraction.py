@@ -76,11 +76,16 @@ class MultilingualContent(BaseModel):
 
 class AttractionImage(BaseModel):
     """Attraction image model"""
-    url: HttpUrl
+    url: str  # Changed from HttpUrl to str for better frontend compatibility
     alt_text: MultilingualContent
     caption: Optional[MultilingualContent] = None
     is_primary: bool = False
     order: int = 0
+    
+    class Config:
+        json_encoders = {
+            str: lambda v: str(v) if v else ""
+        }
 
 
 class Review(BaseModel):
@@ -237,22 +242,24 @@ class AttractionResponse(BaseModel):
     description: MultilingualContent
     short_description: MultilingualContent
     category: AttractionCategory
-    subcategories: List[str]
-    tags: List[str]
+    subcategories: List[str] = Field(default_factory=list)
+    tags: List[str] = Field(default_factory=list)
     location: Location
     phone: Optional[str] = None
     email: Optional[str] = None
-    website: Optional[HttpUrl] = None
-    images: List[AttractionImage]
-    opening_hours: List[OpeningHours]
-    pricing: List[PricingTier]
-    is_free: bool
-    requires_booking: bool
-    amenities: List[str]
-    accessibility_features: List[AccessibilityFeature]
-    average_rating: float
-    total_reviews: int
-    is_active: bool
-    is_featured: bool
+    website: Optional[str] = None  # Changed from HttpUrl to allow None
+    images: List[AttractionImage] = Field(default_factory=list)
+    opening_hours: List[OpeningHours] = Field(default_factory=list)
+    pricing: List[PricingTier] = Field(default_factory=list)
+    is_free: bool = False
+    requires_booking: bool = False
+    amenities: List[str] = Field(default_factory=list)
+    accessibility_features: List[AccessibilityFeature] = Field(default_factory=list)
+    average_rating: float = 0.0
+    total_reviews: int = 0
+    is_active: bool = True
+    is_featured: bool = False
+    slug: Optional[str] = None
+    popularity_score: float = 0.0
     created_at: datetime
     updated_at: datetime

@@ -23,6 +23,7 @@ import {
 import { useLanguageStore } from "@/store/language-store";
 import { useAuthStore } from "@/store/auth-store";
 import { getLocalizedText } from "@/lib/i18n";
+import { getImageUrl, getFallbackImageUrl } from "@/lib/image-utils";
 import apiClient from "@/lib/api-client";
 import type { Attraction } from "@/types";
 import Image from "next/image";
@@ -38,7 +39,7 @@ export default function HomePage() {
   }, []);
 
   // Fetch featured/trending attractions
-  const { data: attractionsData, isLoading } = useQuery({
+  const { data: attractionsData, isLoading, error: attractionsError } = useQuery({
     queryKey: ["attractions", "featured", currentLanguage],
     queryFn: async () => {
       try {
@@ -48,7 +49,11 @@ export default function HomePage() {
         });
         const data = Array.isArray(response.data) ? response.data : [];
         return data.slice(0, 4);
-      } catch {
+      } catch (error: any) {
+        // Log error for debugging but don't show to user
+        if (error?.code === "ERR_NETWORK" || error?.code === "ECONNREFUSED") {
+          console.warn("API server unavailable, using default attractions");
+        }
         // Fallback to list if featured endpoint fails
         try {
           const response = await apiClient.attractions.list({
@@ -58,10 +63,13 @@ export default function HomePage() {
           } as any);
           return response.data?.items || [];
         } catch {
+          // Return empty array to use default destinations
           return [];
         }
       }
     },
+    retry: false, // Don't retry on network errors
+    refetchOnWindowFocus: false, // Don't refetch when window gains focus
   });
 
   const featuredAttractions: Attraction[] = Array.isArray(attractionsData)
@@ -366,11 +374,8 @@ export default function HomePage() {
                 const name = getLocalizedText(attraction.name, currentLanguage) ||
                   (typeof attraction.name === 'string' ? attraction.name : attraction.name?.en || '');
                 const location = attraction.location?.city || attraction.location?.province || '';
-                const imageUrl = attraction.images?.[0]?.url ||
-                  (attraction.id === 'sigiriya' ? 'https://images.unsplash.com/photo-1559827260-dc66d52bef19?w=800&h=600&fit=crop' :
-                    attraction.id === 'mirissa' ? 'https://images.unsplash.com/photo-1507525428034-b723cf961d3e?w=800&h=600&fit=crop' :
-                      attraction.id === 'nuwara-eliya' ? 'https://images.unsplash.com/photo-1516026672322-600c59507334?w=800&h=600&fit=crop' :
-                        'https://images.unsplash.com/photo-1578662996442-48f60103fc96?w=800&h=600&fit=crop');
+                // Get image URL with fallback
+                const imageUrl = getImageUrl(attraction.images?.[0]) || getFallbackImageUrl(attraction.category, attraction.id);
 
                 return (
                   <Link
@@ -388,6 +393,18 @@ export default function HomePage() {
                           alt={name}
                           fill
                           className="object-cover group-hover:scale-110 transition-transform duration-700"
+                          onError={(e) => {
+                            // Fallback to placeholder on error
+                            const target = e.target as HTMLImageElement;
+                            target.style.display = 'none';
+                            const parent = target.parentElement;
+                            if (parent) {
+                              const placeholder = document.createElement('div');
+                              placeholder.className = 'h-full w-full bg-gradient-to-br from-teal-200 to-blue-200 flex items-center justify-center';
+                              placeholder.innerHTML = '<span class="text-gray-400 text-sm">Image unavailable</span>';
+                              parent.appendChild(placeholder);
+                            }
+                          }}
                         />
                         {/* Gradient Overlay */}
                         <div className="absolute inset-0 bg-gradient-to-t from-black/60 via-black/20 to-transparent opacity-80 group-hover:opacity-90 transition-opacity duration-300"></div>

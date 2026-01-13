@@ -113,12 +113,15 @@ class GeminiService:
                 tourism_context=tourism_context
             )
             
+            # Get model name from settings
+            model_name = settings.GEMINI_MODEL
+            
             # Generate response using new SDK
             loop = asyncio.get_event_loop()
             response = await loop.run_in_executor(
                 None,
                 lambda: self.client.models.generate_content(
-                    model=settings.GEMINI_MODEL,
+                    model=model_name,
                     contents=prompt,
                     config=self.generation_config
                 )

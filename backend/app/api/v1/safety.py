@@ -24,6 +24,132 @@ logger = logging.getLogger(__name__)
 safety_service = SafetyService()
 
 
+# General safety tips for Sri Lanka travelers
+SAFETY_TIPS = [
+    {
+        "id": "tip_1",
+        "category": "general",
+        "title": "Keep Emergency Numbers Handy",
+        "description": "Save important numbers: Police (119), Ambulance (110), Fire (111), Tourist Police (011-242-1052)",
+        "icon": "📞",
+        "priority": "high"
+    },
+    {
+        "id": "tip_2",
+        "category": "transport",
+        "title": "Use Registered Taxis",
+        "description": "Always use metered taxis or ride-hailing apps like PickMe and Uber for safe transportation",
+        "icon": "🚕",
+        "priority": "high"
+    },
+    {
+        "id": "tip_3",
+        "category": "health",
+        "title": "Stay Hydrated",
+        "description": "Sri Lanka can be very hot and humid. Drink plenty of bottled water and avoid tap water",
+        "icon": "💧",
+        "priority": "medium"
+    },
+    {
+        "id": "tip_4",
+        "category": "valuables",
+        "title": "Secure Your Valuables",
+        "description": "Use hotel safes for passports and valuables. Keep copies of important documents separately",
+        "icon": "🔒",
+        "priority": "high"
+    },
+    {
+        "id": "tip_5",
+        "category": "wildlife",
+        "title": "Wildlife Safety",
+        "description": "Keep safe distance from wild elephants and other wildlife. Follow guide instructions in national parks",
+        "icon": "🐘",
+        "priority": "high"
+    },
+    {
+        "id": "tip_6",
+        "category": "beach",
+        "title": "Beach Safety",
+        "description": "Be aware of strong currents. Swim only in designated areas with lifeguards present",
+        "icon": "🏖️",
+        "priority": "high"
+    },
+    {
+        "id": "tip_7",
+        "category": "cultural",
+        "title": "Respect Religious Sites",
+        "description": "Dress modestly at temples (cover shoulders and knees). Remove shoes before entering sacred sites",
+        "icon": "🛕",
+        "priority": "medium"
+    },
+    {
+        "id": "tip_8",
+        "category": "food",
+        "title": "Food Safety",
+        "description": "Eat at reputable restaurants. Be cautious with street food if you have a sensitive stomach",
+        "icon": "🍽️",
+        "priority": "medium"
+    },
+    {
+        "id": "tip_9",
+        "category": "general",
+        "title": "Share Your Itinerary",
+        "description": "Let family or friends know your travel plans. Use location sharing features when exploring",
+        "icon": "📍",
+        "priority": "medium"
+    },
+    {
+        "id": "tip_10",
+        "category": "night",
+        "title": "Night Safety",
+        "description": "Avoid walking alone in unfamiliar areas after dark. Stick to well-lit, populated areas",
+        "icon": "🌙",
+        "priority": "high"
+    }
+]
+
+
+@router.get("/tips")
+async def get_safety_tips(
+    category: Optional[str] = Query(None, description="Filter by category: general, transport, health, valuables, wildlife, beach, cultural, food, night"),
+    priority: Optional[str] = Query(None, description="Filter by priority: high, medium, low")
+):
+    """
+    🛡️ **Get Safety Tips**
+    
+    Get general safety tips and recommendations for traveling in Sri Lanka.
+    
+    **Categories:**
+    - `general` - General safety advice
+    - `transport` - Transportation safety
+    - `health` - Health and wellness
+    - `valuables` - Protecting belongings
+    - `wildlife` - Wildlife encounters
+    - `beach` - Beach and water safety
+    - `cultural` - Cultural etiquette
+    - `food` - Food and drinking safety
+    - `night` - Night time safety
+    
+    **Example:** `GET /safety/tips?category=beach&priority=high`
+    """
+    tips = SAFETY_TIPS.copy()
+    
+    # Filter by category
+    if category:
+        tips = [tip for tip in tips if tip["category"] == category]
+    
+    # Filter by priority
+    if priority:
+        tips = [tip for tip in tips if tip["priority"] == priority]
+    
+    return {
+        "tips": tips,
+        "total": len(tips),
+        "categories": ["general", "transport", "health", "valuables", "wildlife", "beach", "cultural", "food", "night"],
+        "emergency_numbers": safety_service.EMERGENCY_NUMBERS
+    }
+
+
 @router.post("/sos", status_code=status.HTTP_201_CREATED)
 async def create_sos_alert(
     request: SOSRequest,

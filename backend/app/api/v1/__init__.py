@@ -26,7 +26,8 @@ from backend.app.api.v1 import (
     challenges,
     forum,
     recommendations,
-    landmarks
+    landmarks,
+    speech
 )
 
 api_router = APIRouter()
@@ -48,9 +49,10 @@ api_router.include_router(weather.router, prefix="/weather", tags=["Weather"])
 api_router.include_router(currency.router, prefix="/currency", tags=["Currency"])
 api_router.include_router(email_verification.router, prefix="/email", tags=["Email Verification"])
 api_router.include_router(itinerary.router, prefix="/itinerary", tags=["Itinerary & Trip Planning"])
-api_router.include_router(safety.router, tags=["Safety & Emergency"])
+api_router.include_router(safety.router, prefix="/safety", tags=["Safety & Emergency"])
 api_router.include_router(oauth.router, tags=["OAuth2 Social Login"])
 api_router.include_router(challenges.router, tags=["Challenges"])
 api_router.include_router(forum.router, tags=["Forum"])
 api_router.include_router(recommendations.router, tags=["Recommendations"])
 api_router.include_router(landmarks.router, tags=["Landmarks"])
+api_router.include_router(speech.router, prefix="/speech", tags=["Speech & Voice"])

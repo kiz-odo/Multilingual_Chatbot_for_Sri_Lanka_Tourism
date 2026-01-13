@@ -196,7 +196,7 @@ class StartupValidator:
         """Validate external API keys"""
         api_keys = {
             "GEMINI_API_KEY": (settings.GEMINI_API_KEY, ValidationSeverity.WARNING),
-            "GOOGLE_MAPS_API_KEY": (settings.GOOGLE_MAPS_API_KEY, ValidationSeverity.WARNING),
+            "GOOGLE_MAPS_API_KEY": (settings.GOOGLE_MAPS_API_KEY, ValidationSeverity.INFO),
             "OPENWEATHER_API_KEY": (settings.OPENWEATHER_API_KEY, ValidationSeverity.INFO),
         }
         
@@ -209,12 +209,18 @@ class StartupValidator:
                     message=f"{name} is configured"
                 ))
             else:
+                feature_impact = {
+                    "GEMINI_API_KEY": "LLM chat features may be limited",
+                    "GOOGLE_MAPS_API_KEY": "Maps & location features will use fallback data",
+                    "OPENWEATHER_API_KEY": "Weather features will use mock data"
+                }.get(name, "Some features may be unavailable")
+                
                 self.report.add_result(ValidationResult(
                     name=name,
                     passed=False,
                     severity=severity,
                     message=f"{name} is not configured",
-                    details="Some features may be unavailable"
+                    details=feature_impact
                 ))
     
     def _validate_security_settings(self):
@@ -255,22 +261,23 @@ class StartupValidator:
     
     async def _validate_mongodb(self):
         """Validate MongoDB connection"""
+        client = None
         try:
+            import asyncio
             from motor.motor_asyncio import AsyncIOMotorClient
             
+            # Create client with timeout
             client = AsyncIOMotorClient(
                 settings.MONGODB_URL,
-                serverSelectionTimeoutMS=5000
+                serverSelectionTimeoutMS=3000,
+                connectTimeoutMS=3000
             )
             
-            # Test connection
-            await client.admin.command('ping')
-            
-            # Close client - Motor client close is synchronous, not async
-            try:
-                client.close()
-            except Exception:
-                pass  # Ignore close errors
+            # Test connection with timeout
+            await asyncio.wait_for(
+                client.admin.command('ping'),
+                timeout=5.0
+            )
             
             self.report.add_result(ValidationResult(
                 name="MONGODB",
@@ -278,27 +285,48 @@ class StartupValidator:
                 severity=ValidationSeverity.CRITICAL,
                 message="MongoDB connection successful"
             ))
+        except asyncio.TimeoutError:
+            self.report.add_result(ValidationResult(
+                name="MONGODB",
+                passed=False,
+                severity=ValidationSeverity.CRITICAL,
+                message="MongoDB connection timed out",
+                details="Start MongoDB with: docker-compose up -d mongodb"
+            ))
         except Exception as e:
             self.report.add_result(ValidationResult(
                 name="MONGODB",
                 passed=False,
                 severity=ValidationSeverity.CRITICAL,
                 message="MongoDB connection failed",
-                details=str(e)
+                details=f"{str(e)} - Start with: docker-compose up -d mongodb"
             ))
+        finally:
+            # Ensure client is closed properly
+            if client is not None:
+                try:
+                    client.close()
+                except Exception:
+                    pass  # Ignore close errors
     
     async def _validate_redis(self):
         """Validate Redis connection"""
         try:
+            import asyncio
             import redis.asyncio as redis
             
-            client = redis.from_url(
-                settings.REDIS_URL,
-                socket_connect_timeout=5
-            )
+            async def check_redis():
+                client = redis.from_url(
+                    settings.REDIS_URL,
+                    socket_connect_timeout=3
+                )
+                try:
+                    await client.ping()
+                finally:
+                    await client.close()
             
-            await client.ping()
-            await client.close()
+            # Add overall timeout protection
+            await asyncio.wait_for(check_redis(), timeout=5.0)
             
             self.report.add_result(ValidationResult(
                 name="REDIS",
@@ -306,13 +334,21 @@ class StartupValidator:
                 severity=ValidationSeverity.CRITICAL,
                 message="Redis connection successful"
             ))
+        except asyncio.TimeoutError:
+            self.report.add_result(ValidationResult(
+                name="REDIS",
+                passed=False,
+                severity=ValidationSeverity.CRITICAL,
+                message="Redis connection timed out",
+                details="Start Redis with: docker-compose up -d redis"
+            ))
         except Exception as e:
             self.report.add_result(ValidationResult(
                 name="REDIS",
                 passed=False,
                 severity=ValidationSeverity.CRITICAL,
                 message="Redis connection failed",
-                details=str(e)
+                details=f"{str(e)} - Start with: docker-compose up -d redis"
             ))
     
     async def _validate_rasa(self):
@@ -323,7 +359,7 @@ class StartupValidator:
                 name="RASA_SERVER",
                 passed=True,
                 severity=ValidationSeverity.INFO,
-                message="Rasa server disabled (using LLM fallback)"
+                message="Rasa NLU disabled - using LLM-only mode (recommended)"
             ))
             return
             
@@ -337,7 +373,7 @@ class StartupValidator:
                     self.report.add_result(ValidationResult(
                         name="RASA_SERVER",
                         passed=True,
-                        severity=ValidationSeverity.WARNING,
+                        severity=ValidationSeverity.INFO,
                         message="Rasa server is accessible"
                     ))
                 else:
@@ -347,9 +383,9 @@ class StartupValidator:
             self.report.add_result(ValidationResult(
                 name="RASA_SERVER",
                 passed=False,
-                severity=ValidationSeverity.WARNING,
-                message="Rasa server is not accessible",
-                details=f"LLM fallback will be used. Error: {str(e)}"
+                severity=ValidationSeverity.INFO,
+                message="Rasa server unavailable (LLM fallback active)",
+                details=f"This is OK - app will use LLM for NLU. Error: {str(e)}"
             ))
     
     async def _validate_llm_providers(self):
@@ -420,8 +456,9 @@ async def validate_startup_environment() -> bool:
             return False
     
     if report.has_warnings:
-        logger.warning("Startup validation completed with warnings")
+        logger.info("Startup validation completed with optional service warnings")
+        logger.info("App will run with available services - check logs for details")
     else:
-        logger.info("Startup validation completed successfully")
+        logger.info("✅ All startup validations passed successfully")
     
     return True

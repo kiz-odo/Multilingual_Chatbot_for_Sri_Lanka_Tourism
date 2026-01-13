@@ -42,11 +42,12 @@ def main():
         logger.warning("⚠️  WARNING: Default SECRET_KEY detected! Change it in production!")
     
     # Start the server
+    # Disable reload in dev to prevent constant reloading from log files
     uvicorn.run(
         "backend.app.main:app",
         host=settings.HOST,
         port=settings.PORT,
-        reload=settings.DEBUG,
+        reload=False,  # Disabled to prevent constant reloads from file changes
         log_level=settings.LOG_LEVEL.lower(),
         access_log=True,
         use_colors=True

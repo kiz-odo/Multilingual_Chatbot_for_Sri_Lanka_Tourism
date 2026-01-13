@@ -219,30 +219,30 @@ def transform_hotel(hotel_data):
 async def import_hotels():
     """Import hotels into database"""
     
-    print("\n🏨 Importing THASL Hotels Data")
+    print("\nImporting THASL Hotels Data")
     print("=" * 60)
     
     # Initialize database
     try:
         await init_database()
-        print("✅ Database connection established\n")
+        print("[OK] Database connection established\n")
     except Exception as e:
-        print(f"❌ Failed to connect to database: {e}")
+        print(f"[ERROR] Failed to connect to database: {e}")
         return
     
     # Load THASL data
     data_file = project_root / "scripts" / "thasl_hotels.json"
     
     if not data_file.exists():
-        print(f"❌ Data file not found: {data_file}")
+        print(f"[ERROR] Data file not found: {data_file}")
         return
     
     try:
         with open(data_file, 'r', encoding='utf-8') as f:
             hotels_data = json.load(f)
-        print(f"✅ Loaded {len(hotels_data)} hotels from file\n")
+        print(f"[OK] Loaded {len(hotels_data)} hotels from file\n")
     except Exception as e:
-        print(f"❌ Failed to load data: {e}")
+        print(f"[ERROR] Failed to load data: {e}")
         return
     
     # Import hotels
@@ -250,7 +250,7 @@ async def import_hotels():
     skipped = 0
     errors = 0
     
-    print("🔄 Processing hotels...")
+    print("Processing hotels...")
     print("-" * 60)
     
     for hotel_data in hotels_data:
@@ -273,28 +273,27 @@ async def import_hotels():
             imported += 1
             
             if imported % 10 == 0:
-                print(f"  ✅ Imported {imported} hotels...")
+                print(f"  [OK] Imported {imported} hotels...")
             
         except Exception as e:
             errors += 1
-            print(f"  ❌ Error importing {hotel_data.get('name', 'Unknown')}: {str(e)[:100]}")
+            print(f"  [ERROR] Error importing {hotel_data.get('name', 'Unknown')}: {str(e)[:100]}")
     
     # Summary
     print("\n" + "=" * 60)
-    print("📊 Import Summary")
+    print("Import Summary")
     print("=" * 60)
-    print(f"✅ Imported: {imported}")
-    print(f"⏭️  Skipped:  {skipped} (already exist)")
-    print(f"❌ Errors:   {errors}")
+    print(f"[OK] Imported: {imported}")
+    print(f"[SKIP] Skipped:  {skipped} (already exist)")
+    print(f"[ERROR] Errors:   {errors}")
     print("=" * 60)
     
     if imported > 0:
-        print(f"\n✅ Successfully imported {imported} hotels!")
-        print("🚀 Run tests to verify: python -m pytest backend/tests/")
+        print(f"\n[OK] Successfully imported {imported} hotels!")
     elif skipped > 0:
-        print("\n⚠️  All hotels already in database")
+        print("\n[WARN] All hotels already in database")
     else:
-        print("\n❌ Import failed")
+        print("\n[ERROR] Import failed")
 
 
 if __name__ == "__main__":

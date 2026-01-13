@@ -5,6 +5,8 @@ Architecture: Rasa for structured intents + Gemini for complex queries
 
 from typing import Dict, Any, Optional, List
 import logging
+import asyncio
+import time
 
 from backend.app.services.llm_service import get_llm_service
 from backend.app.services.rasa_service import RasaService
@@ -23,6 +25,10 @@ class HybridChatService:
     1. Rasa: Handles structured intents (bookings, specific queries, etc.)
     2. Gemini: Handles complex, open-ended questions
     3. RAG: Provides tourism context to LLMs
+    
+    Timeout protection:
+    - Individual service timeouts prevent slow external calls
+    - Total request timeout ensures frontend doesn't timeout
     """
     
     def __init__(self):
@@ -33,6 +39,13 @@ class HybridChatService:
         
         # CrewAI configuration
         self.USE_CREWAI = getattr(settings, 'USE_CREWAI', False)
+        
+        # Timeout configuration (from settings)
+        self.RASA_TIMEOUT = getattr(settings, 'RASA_TIMEOUT', 5)
+        self.LLM_TIMEOUT = getattr(settings, 'LLM_TIMEOUT', 30)
+        self.TAVILY_TIMEOUT = getattr(settings, 'TAVILY_TIMEOUT', 10)
+        self.CREWAI_TIMEOUT = getattr(settings, 'CREWAI_TIMEOUT', 45)
+        self.CHAT_TOTAL_TIMEOUT = getattr(settings, 'CHAT_TOTAL_TIMEOUT', 90)
         
         # Define structured intents that Rasa handles well
         self.STRUCTURED_INTENTS = [
@@ -88,6 +101,11 @@ class HybridChatService:
         4. Response Generation (multilingual)
         5. Return to User
         
+        Timeout protection:
+        - Track total request time
+        - Enforce individual service timeouts
+        - Fail fast if approaching total timeout limit
+        
         Args:
             message: User message
             sender_id: Unique sender identifier
@@ -97,6 +115,21 @@ class HybridChatService:
         Returns:
             Response dictionary with text, intent, confidence, entities, etc.
         """
+        # Track total request time
+        request_start_time = time.time()
+        
+        def _get_elapsed_time() -> float:
+            """Get elapsed time since request start"""
+            return time.time() - request_start_time
+        
+        def _check_timeout_budget(service_name: str, required_time: float) -> bool:
+            """Check if we have enough time budget left for a service call"""
+            elapsed = _get_elapsed_time()
+            remaining = self.CHAT_TOTAL_TIMEOUT - elapsed
+            if remaining < required_time:
+                logger.warning(f"Insufficient time budget for {service_name}: {elapsed:.1f}s used, {remaining:.1f}s remaining")
+                return False
+            return True
         try:
             # Step 0: Check if query is complex enough for CrewAI multi-agent processing
             is_complex_query = self._is_complex_query(message)
@@ -125,11 +158,32 @@ class HybridChatService:
                     logger.warning(f"CrewAI processing failed: {e}, falling back to standard routing")
                     # Continue with normal routing
             
-            # Step 1: Get intent and confidence from Rasa NLU
-            rasa_nlu_result = await self.rasa_service.parse_message(message, language)
-            intent = rasa_nlu_result.get("intent", {}).get("name", "unknown")
-            confidence = rasa_nlu_result.get("intent", {}).get("confidence", 0.0)
-            entities = rasa_nlu_result.get("entities", [])
+            
+            # Step 1: Get intent and confidence from Rasa NLU (with timeout)
+            try:
+                if not _check_timeout_budget("Rasa NLU", self.RASA_TIMEOUT):
+                    raise asyncio.TimeoutError("Insufficient time budget for Rasa")
+                
+                rasa_nlu_result = await asyncio.wait_for(
+                    self.rasa_service.parse_message(message, language),
+                    timeout=self.RASA_TIMEOUT
+                )
+                intent = rasa_nlu_result.get("intent", {}).get("name", "unknown")
+                confidence = rasa_nlu_result.get("intent", {}).get("confidence", 0.0)
+                entities = rasa_nlu_result.get("entities", [])
+                
+                logger.info(f"Rasa NLU: intent={intent}, confidence={confidence:.2f} (took {_get_elapsed_time():.2f}s)")
+                
+            except asyncio.TimeoutError:
+                logger.warning(f"Rasa NLU timeout after {self.RASA_TIMEOUT}s, using fallback")
+                intent = "unknown"
+                confidence = 0.0
+                entities = []
+            except Exception as e:
+                logger.warning(f"Rasa NLU error: {e}, using fallback")
+                intent = "unknown"
+                confidence = 0.0
+                entities = []
             
             logger.info(f"Rasa NLU: intent={intent}, confidence={confidence:.2f}")
             
@@ -167,31 +221,49 @@ class HybridChatService:
                     logger.info(f"Routing to LLM for query (Rasa confidence: {confidence:.2f}, low_confidence: {is_low_confidence})")
                     
                     try:
+                        # Check if we have enough time budget for LLM
+                        if not _check_timeout_budget("LLM", self.LLM_TIMEOUT):
+                            raise asyncio.TimeoutError("Insufficient time budget for LLM")
+                        
                         # Prepare context for LLM
                         context = self._prepare_llm_context(entities)
                         
-                        # Get response from LLM (will use Gemini → Qwen → Mistral fallback chain)
-                        llm_response = await self.llm_service.get_response(
-                            message=message,
-                            language=language,
-                            context=context,
-                            conversation_history=conversation_history
+                        # Get response from LLM with timeout (will use Gemini → Qwen → Mistral fallback chain)
+                        llm_response = await asyncio.wait_for(
+                            self.llm_service.get_response(
+                                message=message,
+                                language=language,
+                                context=context,
+                                conversation_history=conversation_history
+                            ),
+                            timeout=self.LLM_TIMEOUT
                         )
+                        
+                        logger.info(f"LLM response received (took {_get_elapsed_time():.2f}s)")
                         
                         # Step 3C: If low confidence (<0.4), add Tavily Search fallback
                         if is_low_confidence and await self.tavily_search_service.is_available():
                             logger.info(f"Low confidence ({confidence:.2f}), adding Tavily Search fallback")
                             try:
-                                search_response = await self.tavily_search_service.get_fallback_response(
-                                    query=message,
-                                    language=language
-                                )
-                                
-                                # Enhance LLM response with search results
-                                if search_response.get("sources"):
-                                    llm_response["text"] += f"\n\n[Additional sources: {', '.join(search_response['sources'][:2])}]"
-                                    llm_response["sources"] = search_response.get("sources", [])
-                                    llm_response["search_enabled"] = True
+                                # Check if we have enough time budget for search
+                                if _check_timeout_budget("Tavily Search", self.TAVILY_TIMEOUT):
+                                    search_response = await asyncio.wait_for(
+                                        self.tavily_search_service.get_fallback_response(
+                                            query=message,
+                                            language=language
+                                        ),
+                                        timeout=self.TAVILY_TIMEOUT
+                                    )
+                                    
+                                    # Enhance LLM response with search results
+                                    if search_response.get("sources"):
+                                        llm_response["text"] += f"\n\n[Additional sources: {', '.join(search_response['sources'][:2])}]"
+                                        llm_response["sources"] = search_response.get("sources", [])
+                                        llm_response["search_enabled"] = True
+                                else:
+                                    logger.warning("Skipping Tavily Search due to time budget constraints")
+                            except asyncio.TimeoutError:
+                                logger.warning(f"Tavily Search timeout after {self.TAVILY_TIMEOUT}s")
                             except Exception as search_error:
                                 logger.warning(f"Tavily Search fallback failed: {search_error}")
                         
@@ -226,9 +298,31 @@ class HybridChatService:
                         except Exception as search_error:
                             logger.warning(f"Tavily Search fallback also failed: {search_error}")
                         
-                        # Step 5: Final fallback to Rasa
-                        logger.warning("All LLMs and Tavily Search failed, falling back to Rasa")
+                        # Step 5: Final fallback - provide helpful default response for low confidence
+                        logger.warning("All LLMs and Tavily Search failed")
                         intent_name = intent.get('name') if isinstance(intent, dict) else intent
+                        
+                        # For very low confidence, don't use Rasa as it might give wrong response
+                        if confidence < 0.3:
+                            logger.info(f"Very low confidence ({confidence:.2f}), providing default tourism response")
+                            return {
+                                "text": f"I understand you're asking about '{message}'. I'm here to help you explore Sri Lanka! "
+                                       f"You can ask me about:\n"
+                                       f"🏛️ Historical attractions (Sigiriya, Anuradhapura)\n"
+                                       f"🏖️ Beautiful beaches and coastal areas\n"
+                                       f"🏨 Hotels and accommodations\n"
+                                       f"🍽️ Restaurants and Sri Lankan cuisine\n"
+                                       f"🚌 Transportation and getting around\n"
+                                       f"🎭 Cultural events and festivals\n"
+                                       f"☁️ Weather information\n\n"
+                                       f"What would you like to know more about?",
+                                "intent": {"name": intent_name, "confidence": confidence},
+                                "confidence": confidence,
+                                "entities": entities,
+                                "model": "fallback_default"
+                            }
+                        
+                        # For medium-low confidence, use Rasa
                         rasa_response = await self.rasa_service.get_response(
                             message=message,
                             sender_id=sender_id,

@@ -24,6 +24,7 @@ import {
 import { useLanguageStore } from "@/store/language-store";
 import { useAuthStore } from "@/store/auth-store";
 import { getLocalizedText } from "@/lib/i18n";
+import { getImageUrl, getFallbackImageUrl } from "@/lib/image-utils";
 import apiClient from "@/lib/api-client";
 import { useToast } from "@/hooks/use-toast";
 import type { Attraction } from "@/types";
@@ -321,18 +322,21 @@ export default function AttractionsPage() {
                       viewMode === "list" ? "w-48 h-48 flex-shrink-0" : "h-48"
                     } bg-gradient-to-br from-cyan-400 to-blue-500`}
                   >
-                    {attraction.images?.[0]?.url ? (
-                      <Image
-                        src={attraction.images[0].url}
-                        alt={getLocalizedText(attraction.name, currentLanguage) || "Attraction"}
-                        fill
-                        className="object-cover"
-                      />
-                    ) : (
-                      <div className="absolute inset-0 flex items-center justify-center">
-                        <Building2 className="w-16 h-16 text-white/30" />
-                      </div>
-                    )}
+                    {(() => {
+                      const imageUrl = getImageUrl(attraction.images?.[0]) || getFallbackImageUrl(attraction.category, attraction.id);
+                      return imageUrl ? (
+                        <Image
+                          src={imageUrl}
+                          alt={getLocalizedText(attraction.name, currentLanguage) || "Attraction"}
+                          fill
+                          className="object-cover"
+                        />
+                      ) : (
+                        <div className="absolute inset-0 flex items-center justify-center">
+                          <Building2 className="w-16 h-16 text-white/30" />
+                        </div>
+                      );
+                    })()}
                     <Badge className="absolute top-3 left-3 bg-white/90 text-gray-900">
                       {getCategoryBadge(attraction.category || "")}
                     </Badge>

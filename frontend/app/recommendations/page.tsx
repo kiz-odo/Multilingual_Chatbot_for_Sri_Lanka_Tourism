@@ -61,7 +61,7 @@ export default function RecommendationsPage() {
     queryFn: async () => {
       try {
         // Use the POST endpoint with proper format
-        const response = await fetch(`${process.env.NEXT_PUBLIC_API_URL || "http://localhost:8000"}/api/v1/recommendations`, {
+        const response = await fetch(`${process.env.NEXT_PUBLIC_API_URL || "http://localhost:8001"}/api/v1/recommendations`, {
           method: "POST",
           headers: {
             "Content-Type": "application/json",

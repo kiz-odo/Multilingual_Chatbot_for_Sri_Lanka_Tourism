@@ -575,7 +575,7 @@ class CrewAIService:
                 agents=agents_to_use,
                 tasks=tasks_to_create,
                 verbose=getattr(settings, 'CREWAI_VERBOSE', False) or settings.DEBUG,
-                process=1  # Sequential processing (1) or parallel (2)
+                process="sequential"  # Sequential processing or "hierarchical"
             )
             
             # Execute crew (run in executor to avoid blocking)

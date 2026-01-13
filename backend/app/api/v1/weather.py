@@ -68,21 +68,39 @@ async def get_current_weather(
                 detail="Weather data not available"
             )
         
-        return WeatherResponse(
-            temperature=weather.temperature,
-            feels_like=weather.feels_like,
-            humidity=weather.humidity,
-            pressure=weather.pressure,
-            visibility=weather.visibility,
-            wind_speed=weather.wind_speed,
-            wind_direction=weather.wind_direction,
-            condition={
-                "main": weather.condition.main,
-                "description": weather.condition.description,
-                "icon": weather.condition.icon
-            },
-            timestamp=weather.timestamp
-        )
+        # Handle both dict and object response formats
+        if isinstance(weather, dict):
+            return WeatherResponse(
+                temperature=weather.get("temperature", 0),
+                feels_like=weather.get("feels_like", 0),
+                humidity=weather.get("humidity", 0),
+                pressure=weather.get("pressure", 0),
+                visibility=weather.get("visibility", 0) or 10000,
+                wind_speed=weather.get("wind_speed", 0),
+                wind_direction=weather.get("wind_direction", 0) or 0,
+                condition={
+                    "main": weather.get("main", "Clear"),
+                    "description": weather.get("description", "clear sky"),
+                    "icon": weather.get("icon", "01d")
+                },
+                timestamp=datetime.fromisoformat(weather.get("timestamp", datetime.now().isoformat())) if isinstance(weather.get("timestamp"), str) else weather.get("timestamp", datetime.now())
+            )
+        else:
+            return WeatherResponse(
+                temperature=weather.temperature,
+                feels_like=weather.feels_like,
+                humidity=weather.humidity,
+                pressure=weather.pressure,
+                visibility=weather.visibility or 10000,
+                wind_speed=weather.wind_speed,
+                wind_direction=weather.wind_direction or 0,
+                condition={
+                    "main": weather.condition.main,
+                    "description": weather.condition.description,
+                    "icon": weather.condition.icon
+                },
+                timestamp=weather.timestamp
+            )
         
     except HTTPException:
         raise

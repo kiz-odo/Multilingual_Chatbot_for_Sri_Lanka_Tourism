@@ -112,24 +112,36 @@ export function useChat(options: UseChatOptions = {}) {
     }
   }, [conversationId, isWsConnected, joinWsConversation, leaveWsConversation]);
 
+  // Generate or get guest user ID for anonymous users
+  const getGuestUserId = useCallback(() => {
+    if (typeof window === 'undefined') return 'guest-ssr';
+    let guestId = localStorage.getItem('guest_user_id');
+    if (!guestId) {
+      guestId = `guest-${Date.now()}-${Math.random().toString(36).substr(2, 9)}`;
+      localStorage.setItem('guest_user_id', guestId);
+    }
+    return guestId;
+  }, []);
+
   // Send message mutation
   const sendMessageMutation = useMutation({
     mutationFn: async (messageText: string) => {
-      if (!isAuthenticated) throw new Error("Not authenticated");
+      // Generate session ID from conversation ID if available, otherwise use guest session
+      const sessionId = conversationId || getGuestUserId();
       
       const payload = {
         message: messageText,
         language: currentLanguage,
-        conversation_id: conversationId || undefined,
+        session_id: sessionId,
       };
 
-      // Try WebSocket first
-      if (isWsConnected && conversationId) {
+      // Try WebSocket first (only for authenticated users)
+      if (isAuthenticated && isWsConnected && conversationId) {
         sendWsMessage(messageText, conversationId);
         return { success: true };
       }
 
-      // Fallback to HTTP
+      // Use HTTP for guests and as fallback
       const response = await apiClient.chat.sendMessage(payload);
       return response.data;
     },
@@ -152,8 +164,22 @@ export function useChat(options: UseChatOptions = {}) {
         onMessageReceived?.(newMessage);
       }
       setMessage("");
-      queryClient.invalidateQueries({ queryKey: ["chat-conversations", user?.id] });
-      queryClient.invalidateQueries({ queryKey: ["chat-conversation", conversationId] });
+      if (isAuthenticated && user?.id) {
+        queryClient.invalidateQueries({ queryKey: ["chat-conversations", user.id] });
+        queryClient.invalidateQueries({ queryKey: ["chat-conversation", conversationId] });
+      }
+    },
+    onError: (error: Error) => {
+      // Create error message to display in chat
+      const errorMessage: ChatMessage = {
+        id: `error-${Date.now()}`,
+        message: message,
+        response: `⚠️ ${error.message || 'Failed to send message. Please try again.'}`,
+        language: currentLanguage,
+        timestamp: new Date().toISOString(),
+      };
+      setMessages((prev) => [...prev, errorMessage]);
+      console.error('Chat error:', error);
     },
   });
 
@@ -223,4 +249,5 @@ export function useChat(options: UseChatOptions = {}) {
     scrollToBottom,
   };
 }
+
 

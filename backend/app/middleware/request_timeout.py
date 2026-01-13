@@ -34,6 +34,10 @@ class RequestTimeoutMiddleware(BaseHTTPMiddleware):
         Returns:
             Response or timeout error
         """
+        # Skip timeout for OPTIONS (CORS preflight) requests
+        if request.method == "OPTIONS":
+            return await call_next(request)
+        
         # Skip timeout for certain endpoints
         skip_paths = [
             "/health",
@@ -49,7 +53,13 @@ class RequestTimeoutMiddleware(BaseHTTPMiddleware):
         
         # Check for custom timeout in request headers
         custom_timeout = request.headers.get("X-Request-Timeout")
-        timeout = int(custom_timeout) if custom_timeout and custom_timeout.isdigit() else self.timeout_seconds
+        if custom_timeout and custom_timeout.isdigit():
+            timeout = int(custom_timeout)
+        # Give chat endpoints longer timeout by default (AI responses can take time)
+        elif "/api/v1/chat/" in request.url.path:
+            timeout = 120  # 2 minutes for chat endpoints
+        else:
+            timeout = self.timeout_seconds
         
         try:
             # Execute request with timeout

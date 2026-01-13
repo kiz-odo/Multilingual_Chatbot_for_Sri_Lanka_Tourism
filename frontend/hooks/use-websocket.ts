@@ -24,7 +24,7 @@ export function useWebSocket(options: UseWebSocketOptions = {}) {
       return;
     }
 
-    const wsUrl = process.env.NEXT_PUBLIC_WS_URL || "ws://localhost:8000";
+    const wsUrl = process.env.NEXT_PUBLIC_WS_URL || "ws://localhost:8001";
     const socket = io(wsUrl, {
       auth: {
         token: token,
@@ -106,6 +106,7 @@ export function useWebSocket(options: UseWebSocketOptions = {}) {
     leaveConversation,
   };
 }
+
 
 
 

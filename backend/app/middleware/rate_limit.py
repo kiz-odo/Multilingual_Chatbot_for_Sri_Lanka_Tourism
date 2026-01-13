@@ -96,6 +96,10 @@ class RateLimitMiddleware(BaseHTTPMiddleware):
         self.limiter = limiter or rate_limiter
     
     async def dispatch(self, request: Request, call_next):
+        # Skip rate limiting for OPTIONS (CORS preflight) requests
+        if request.method == "OPTIONS":
+            return await call_next(request)
+        
         # Skip rate limiting for health checks and docs
         if request.url.path in ["/health", "/health/live", "/health/ready", "/docs", "/openapi.json", "/redoc"]:
             return await call_next(request)

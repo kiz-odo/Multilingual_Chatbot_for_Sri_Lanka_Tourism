@@ -4,9 +4,9 @@ Complete list of features that are currently disabled or optional in the backend
 
 ## Currently Disabled Features
 
-### 1. **Rasa NLU** ❌ Disabled by Default
+### 1. **Rasa NLU** ✅ Enabled by Default
 
-**Status**: `RASA_ENABLED: bool = False`
+**Status**: `RASA_ENABLED: bool = True`
 
 **What it does**:
 - Intent classification for chat messages
@@ -37,9 +37,9 @@ RASA_SERVER_URL="http://localhost:5005"
 
 ---
 
-### 2. **CrewAI Multi-Agent** ❌ Disabled by Default
+### 2. **CrewAI Multi-Agent** ✅ Enabled by Default
 
-**Status**: `USE_CREWAI: bool = False`
+**Status**: `USE_CREWAI: bool = True`
 
 **What it does**:
 - Multi-agent orchestration for complex queries
