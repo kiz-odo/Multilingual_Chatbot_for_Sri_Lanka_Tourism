@@ -125,8 +125,18 @@ export const translations: Record<
   ja: {},
 };
 
-export function t(key: string, language: Language = "en"): string {
-  return translations[language]?.[key] || translations.en[key] || key;
+export function t(
+  key: string,
+  language: Language = "en",
+  params?: Record<string, string | number>
+): string {
+  let text = translations[language]?.[key] || translations.en[key] || key;
+  if (params) {
+    for (const [name, value] of Object.entries(params)) {
+      text = text.replace(new RegExp(`{{\\s*${name}\\s*}}`, "g"), String(value));
+    }
+  }
+  return text;
 }
 
 export function getLocalizedText(

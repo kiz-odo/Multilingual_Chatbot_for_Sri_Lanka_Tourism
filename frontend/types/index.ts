@@ -62,6 +62,7 @@ export interface Attraction {
   popularity_score?: number;
   average_rating?: number;
   total_reviews?: number;
+  review_count?: number;
   estimated_visit_duration?: string;
   pricing?: Array<{
     category: string;
@@ -94,11 +95,22 @@ export interface Hotel {
   location: {
     address: string;
     city: string;
+    province?: string;
     coordinates: [number, number];
   };
   star_rating?: number;
+  rating?: number;
+  average_rating?: number;
+  review_count?: number;
+  total_reviews?: number;
   price_per_night?: number;
+  price_range?: string;
   amenities?: string[];
+  contact?: {
+    phone?: string;
+    email?: string;
+    website?: string;
+  };
   images?: Array<{
     url: string;
     alt_text?: string;
@@ -122,10 +134,27 @@ export interface Restaurant {
   location: {
     address: string;
     city: string;
+    province?: string;
     coordinates: [number, number];
   };
   price_range?: string;
   rating?: number;
+  average_rating?: number;
+  review_count?: number;
+  total_reviews?: number;
+  specialties?: string[];
+  opening_hours?: string | Array<{
+    day_of_week?: number;
+    day?: string;
+    open_time?: string;
+    close_time?: string;
+    is_closed?: boolean;
+  }>;
+  contact?: {
+    phone?: string;
+    email?: string;
+    website?: string;
+  };
   images?: Array<{
     url: string;
     alt_text?: string;
@@ -139,6 +168,11 @@ export interface Event {
     si?: string;
     ta?: string;
   };
+  title?: {
+    en: string;
+    si?: string;
+    ta?: string;
+  };
   description: {
     en: string;
     si?: string;
@@ -148,11 +182,14 @@ export interface Event {
   start_date: string;
   end_date?: string;
   status?: "upcoming" | "ongoing" | "past" | "cancelled";
+  price?: number;
   location: {
     address: string;
     city: string;
+    province?: string;
     coordinates: [number, number];
   };
+  image_url?: string;
   images?: Array<{
     url: string;
     alt_text?: string;

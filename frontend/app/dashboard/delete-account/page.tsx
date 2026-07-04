@@ -22,7 +22,8 @@ const deleteAccountSchema = z.object({
   }),
 });
 
-type DeleteAccountFormData = z.infer<typeof deleteAccountSchema>;
+type DeleteAccountFormInput = z.input<typeof deleteAccountSchema>;
+type DeleteAccountFormData = z.output<typeof deleteAccountSchema>;
 
 export default function DeleteAccountPage() {
   const router = useRouter();
@@ -40,7 +41,7 @@ export default function DeleteAccountPage() {
     register,
     handleSubmit,
     formState: { errors, isSubmitting },
-  } = useForm<DeleteAccountFormData>({
+  } = useForm<DeleteAccountFormInput, any, DeleteAccountFormData>({
     resolver: zodResolver(deleteAccountSchema),
   });
 

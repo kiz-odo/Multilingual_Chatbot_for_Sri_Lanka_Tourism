@@ -19,7 +19,7 @@ import {
   Users,
 } from "lucide-react";
 import { useLanguageStore } from "@/store/language-store";
-import { getLocalizedText, formatDate } from "@/lib/utils";
+import { getLocalizedText, formatDate, formatCurrency } from "@/lib/utils";
 import { t } from "@/lib/i18n";
 import apiClient from "@/lib/api-client";
 import type { Event } from "@/types";
@@ -88,7 +88,7 @@ export default function EventDetailPage() {
             <div className="relative h-96 rounded-2xl overflow-hidden">
               <Image
                 src={primaryImage}
-                alt={event.title || "Event"}
+                alt={getLocalizedText(event.title, currentLanguage) || "Event"}
                 fill
                 className="object-cover"
               />
@@ -139,7 +139,7 @@ export default function EventDetailPage() {
                   <div>
                     <p className="font-medium">Location</p>
                     <p className="text-sm text-muted-foreground">
-                      {event.location}
+                      {event.location?.address || event.location?.city}
                     </p>
                   </div>
                 </div>
@@ -153,7 +153,7 @@ export default function EventDetailPage() {
             <CardHeader>
               <div className="flex items-start justify-between">
                 <div>
-                  <CardTitle className="text-2xl">{event.title}</CardTitle>
+                  <CardTitle className="text-2xl">{getLocalizedText(event.title, currentLanguage)}</CardTitle>
                   {event.category && (
                     <CardDescription className="mt-2">
                       <Badge variant="secondary">{event.category}</Badge>

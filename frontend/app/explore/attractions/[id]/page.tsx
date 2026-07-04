@@ -57,12 +57,13 @@ export default function AttractionDetailPage() {
       return response.data;
     },
     enabled: isAuthenticated,
-    onSuccess: (data) => {
-      if (data?.favorite_attractions?.includes(attractionId)) {
-        setIsFavorite(true);
-      }
-    },
   });
+
+  React.useEffect(() => {
+    if (userData?.favorite_attractions?.includes(attractionId)) {
+      setIsFavorite(true);
+    }
+  }, [userData, attractionId]);
 
   // Add to favorites mutation
   const addFavoriteMutation = useMutation({
