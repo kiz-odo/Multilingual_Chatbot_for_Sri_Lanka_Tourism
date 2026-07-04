@@ -66,10 +66,7 @@ export default function SecurityPage() {
   // Change password mutation
   const changePasswordMutation = useMutation({
     mutationFn: async (data: PasswordFormData) => {
-      await apiClient.auth.changePassword({
-        current_password: data.currentPassword,
-        new_password: data.newPassword,
-      });
+      await apiClient.auth.changePassword(data.currentPassword, data.newPassword);
     },
     onSuccess: () => {
       addToast({

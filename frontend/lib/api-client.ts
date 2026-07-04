@@ -437,6 +437,8 @@ class ApiClient {
 
     getMyItineraries: () => this.client.get("/itinerary/my-itineraries"),
 
+    list: () => this.client.get("/itinerary/my-itineraries"), // Alias for getMyItineraries
+
     get: (id: string) => this.client.get(`/itinerary/${id}`),
 
     getByShareToken: (token: string) =>

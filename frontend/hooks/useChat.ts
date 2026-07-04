@@ -195,18 +195,6 @@ export function useChat(options: UseChatOptions = {}) {
     [message, sendMessageMutation]
   );
 
-  // Create new conversation
-  const createConversationMutation = useMutation({
-    mutationFn: async (title?: string) => {
-      if (!isAuthenticated) throw new Error("Not authenticated");
-      const response = await apiClient.chat.createConversation({ title });
-      return response.data;
-    },
-    onSuccess: () => {
-      queryClient.invalidateQueries({ queryKey: ["chat-conversations", user?.id] });
-    },
-  });
-
   // Delete conversation
   const deleteConversationMutation = useMutation({
     mutationFn: async (id: string) => {
@@ -239,7 +227,6 @@ export function useChat(options: UseChatOptions = {}) {
     
     // Actions
     sendMessage: handleSendMessage,
-    createConversation: createConversationMutation.mutate,
     deleteConversation: deleteConversationMutation.mutate,
     
     // Refs

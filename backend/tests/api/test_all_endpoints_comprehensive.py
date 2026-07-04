@@ -905,24 +905,24 @@ class TestAllEndpoints:
     @pytest.mark.asyncio
     async def test_health_check(self, client: AsyncClient):
         """Test GET /api/v1/health"""
-        response = await client.get("/api/v1/health")
+        response = await client.get("/health")
         assert response.status_code == 200
     
     @pytest.mark.asyncio
     async def test_health_live(self, client: AsyncClient):
         """Test GET /api/v1/health/live"""
-        response = await client.get("/api/v1/health/live")
+        response = await client.get("/health/live")
         assert response.status_code == 200
     
     @pytest.mark.asyncio
     async def test_health_ready(self, client: AsyncClient):
         """Test GET /api/v1/health/ready"""
-        response = await client.get("/api/v1/health/ready")
+        response = await client.get("/health/ready")
         assert response.status_code == 200
     
     @pytest.mark.asyncio
     async def test_health_detailed(self, client: AsyncClient):
         """Test GET /api/v1/health/detailed"""
-        response = await client.get("/api/v1/health/detailed")
+        response = await client.get("/health/detailed")
         assert response.status_code == 200
 

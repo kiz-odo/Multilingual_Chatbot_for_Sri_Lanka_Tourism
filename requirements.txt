@@ -24,7 +24,7 @@ beanie==1.24.0  # ODM for MongoDB
 # ==========================================
 python-jose[cryptography]==3.3.0  # JWT tokens
 passlib[bcrypt]==1.7.4  # Password hashing
-bcrypt==4.1.2  # Password hashing algorithm
+bcrypt==4.0.1  # Password hashing algorithm (<4.1: passlib 1.7.4 reads bcrypt.__about__, removed in 4.1+)
 cryptography==42.0.2  # Cryptographic operations (Python 3.12 compatible)
 python-multipart>=0.0.7  # Form data parsing (relaxed for strawberry-graphql)
 pyotp==2.9.0  # TOTP for MFA

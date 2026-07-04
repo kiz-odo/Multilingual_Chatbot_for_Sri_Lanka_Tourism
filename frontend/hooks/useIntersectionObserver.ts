@@ -13,7 +13,7 @@ interface IntersectionObserverOptions {
 
 export function useIntersectionObserver<T extends Element>(
     options: IntersectionObserverOptions = {}
-): [RefObject<T>, boolean, IntersectionObserverEntry | undefined] {
+): [RefObject<T | null>, boolean, IntersectionObserverEntry | undefined] {
     const {
         threshold = 0,
         root = null,
@@ -60,7 +60,7 @@ export function useIntersectionObserver<T extends Element>(
 /**
  * useLazyLoad - Simple lazy loading hook
  */
-export function useLazyLoad<T extends Element>(): [RefObject<T>, boolean] {
+export function useLazyLoad<T extends Element>(): [RefObject<T | null>, boolean] {
     const [ref, isVisible] = useIntersectionObserver<T>({
         threshold: 0.1,
         freezeOnceVisible: true,
@@ -75,7 +75,7 @@ export function useLazyLoad<T extends Element>(): [RefObject<T>, boolean] {
 export function useInfiniteScroll<T extends Element>(
     callback: () => void,
     options: { threshold?: number; rootMargin?: string } = {}
-): RefObject<T> {
+): RefObject<T | null> {
     const [ref, isIntersecting] = useIntersectionObserver<T>({
         threshold: options.threshold || 0.1,
         rootMargin: options.rootMargin || '100px',

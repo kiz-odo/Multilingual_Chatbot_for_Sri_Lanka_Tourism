@@ -34,8 +34,17 @@ from backend.app.core.circuit_breaker import initialize_circuit_breakers
 from backend.app.middleware.websocket_security import websocket_cleanup_task
 
 # GraphQL
-from backend.app.graphql import schema, get_graphql_context
-from strawberry.fastapi import GraphQLRouter
+try:
+    from backend.app.graphql import schema, get_graphql_context
+    from strawberry.fastapi import GraphQLRouter
+    GRAPHQL_AVAILABLE = True
+except Exception as e:
+    GRAPHQL_AVAILABLE = False
+    schema = None
+    get_graphql_context = None
+    GraphQLRouter = None
+    logger = logging.getLogger(__name__)
+    logger.warning(f"GraphQL disabled during startup: {e}")
 
 # Setup logging
 setup_logging()
@@ -68,41 +77,58 @@ async def lifespan(app: FastAPI):
     
     # Initialize Redis client for distributed rate limiting
     redis_client = None
+    database_ready = False
     
     try:
         # Initialize database
-        await init_database()
-        logger.info("Database initialized successfully")
-        
-        # Run pending migrations
         try:
-            from backend.app.core.migrations import migration_manager
-            logger.info("Checking for pending migrations...")
-            migration_results = await migration_manager.run_pending_migrations()
-            if migration_results.get("success", 0) > 0:
-                logger.info(f"✅ Applied {migration_results['success']} migration(s)")
-            if migration_results.get("failed", 0) > 0:
-                logger.warning(f"⚠️  {migration_results['failed']} migration(s) failed")
-            if migration_results.get("total", 0) == 0:
-                logger.info("No pending migrations")
+            await init_database()
+            database_ready = True
+            logger.info("Database initialized successfully")
         except Exception as e:
-            logger.warning(f"Migration check failed (non-critical): {e}")
-            # Don't fail startup if migrations fail - they can be run manually
+            if settings.DEBUG:
+                logger.warning(f"Database unavailable in DEBUG mode, continuing without MongoDB: {e}")
+            else:
+                raise
+        
+        # Run pending migrations only when the database is available
+        if database_ready:
+            try:
+                from backend.app.core.migrations import migration_manager
+                logger.info("Checking for pending migrations...")
+                migration_results = await migration_manager.run_pending_migrations()
+                if migration_results.get("success", 0) > 0:
+                    logger.info(f"✅ Applied {migration_results['success']} migration(s)")
+                if migration_results.get("failed", 0) > 0:
+                    logger.warning(f"⚠️  {migration_results['failed']} migration(s) failed")
+                if migration_results.get("total", 0) == 0:
+                    logger.info("No pending migrations")
+            except Exception as e:
+                logger.warning(f"Migration check failed (non-critical): {e}")
+                # Don't fail startup if migrations fail - they can be run manually
         
         # Initialize Redis for distributed rate limiting
-        import redis.asyncio as redis
-        redis_client = redis.from_url(
-            settings.REDIS_URL,
-            decode_responses=True,
-            encoding="utf-8"
-        )
-        
-        # Test Redis connection
-        await redis_client.ping()
-        logger.info("Redis connection established successfully")
-        
-        # Store Redis client in app state for access by middleware
-        app.state.redis = redis_client
+        try:
+            import redis.asyncio as redis
+
+            redis_client = redis.from_url(
+                settings.REDIS_URL,
+                decode_responses=True,
+                encoding="utf-8"
+            )
+
+            # Test Redis connection
+            await redis_client.ping()
+            logger.info("Redis connection established successfully")
+
+            # Store Redis client in app state for access by middleware
+            app.state.redis = redis_client
+        except Exception as e:
+            if settings.DEBUG:
+                logger.warning(f"Redis unavailable in DEBUG mode, continuing without Redis: {e}")
+                app.state.redis = None
+            else:
+                raise
         
         # Setup distributed rate limiting - Commented out (middleware must be added before app starts)
         # from backend.app.middleware.distributed_rate_limit import setup_distributed_rate_limiting
@@ -256,13 +282,14 @@ app.include_router(health.router, tags=["Health"])
 # Include WebSocket routes
 app.include_router(websocket.router)
 
-# Setup GraphQL endpoint
-graphql_app = GraphQLRouter(
-    schema,
-    context_getter=get_graphql_context,
-    graphiql=settings.ENVIRONMENT != "production"  # Enable GraphiQL in dev only
-)
-app.include_router(graphql_app, prefix="/graphql", tags=["GraphQL"])
+# Setup GraphQL endpoint when available
+if GRAPHQL_AVAILABLE and schema and get_graphql_context and GraphQLRouter:
+    graphql_app = GraphQLRouter(
+        schema,
+        context_getter=get_graphql_context,
+        graphiql=settings.ENVIRONMENT != "production"  # Enable GraphiQL in dev only
+    )
+    app.include_router(graphql_app, prefix="/graphql", tags=["GraphQL"])
 
 
 @app.get("/")

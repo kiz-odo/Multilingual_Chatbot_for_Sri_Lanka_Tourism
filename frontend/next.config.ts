@@ -14,6 +14,11 @@ const nextConfig: NextConfig = {
 
   // Reduce memory footprint of image optimization
   images: {
+    // Allowlist of hosts the app actually serves images from. Avoid a "**"
+    // wildcard: it turns the Next image optimizer into an open proxy that will
+    // fetch/optimize any URL. Sources: Unsplash (fallbacks in lib/image-utils),
+    // Google Places photos (maps.googleapis.com, which redirect to
+    // *.googleusercontent.com), and localhost for dev.
     remotePatterns: [
       {
         protocol: "https",
@@ -21,7 +26,11 @@ const nextConfig: NextConfig = {
       },
       {
         protocol: "https",
-        hostname: "**",
+        hostname: "maps.googleapis.com",
+      },
+      {
+        protocol: "https",
+        hostname: "**.googleusercontent.com",
       },
       {
         protocol: "http",

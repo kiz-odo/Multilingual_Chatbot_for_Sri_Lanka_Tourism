@@ -375,7 +375,7 @@ export default function HomePage() {
                   (typeof attraction.name === 'string' ? attraction.name : attraction.name?.en || '');
                 const location = attraction.location?.city || attraction.location?.province || '';
                 // Get image URL with fallback
-                const imageUrl = getImageUrl(attraction.images?.[0]) || getFallbackImageUrl(attraction.category, attraction.id);
+                const imageUrl = getImageUrl(attraction.images?.[0]) || getFallbackImageUrl("category" in attraction ? attraction.category : undefined, attraction.id);
 
                 return (
                   <Link

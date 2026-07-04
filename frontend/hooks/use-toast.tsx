@@ -2,13 +2,17 @@
 
 import * as React from "react";
 
-export type ToastType = "success" | "error" | "warning" | "info";
+export type ToastType = "success" | "error" | "warning" | "info" | "default";
 
 export interface Toast {
   id: string;
-  type: ToastType;
+  variant?: ToastType;
+  /** @deprecated use `variant` */
+  type?: ToastType;
   title?: string;
-  message: string;
+  description?: string;
+  /** @deprecated use `description` */
+  message?: string;
   duration?: number;
 }
 
@@ -73,22 +77,23 @@ function ToastContainer({
 }
 
 function ToastItem({ toast, onClose }: { toast: Toast; onClose: () => void }) {
-  const bgColors = {
+  const bgColors: Record<ToastType, string> = {
     success: "bg-green-500",
     error: "bg-destructive",
     warning: "bg-yellow-500",
     info: "bg-primary",
+    default: "bg-foreground",
   };
 
   return (
     <div
-      className={`${bgColors[toast.type]} text-white rounded-lg shadow-lg p-4 animate-in slide-in-from-right`}
+      className={`${bgColors[toast.variant ?? toast.type ?? "default"]} text-white rounded-lg shadow-lg p-4 animate-in slide-in-from-right`}
       role="alert"
     >
       <div className="flex items-start justify-between">
         <div className="flex-1">
           {toast.title && <p className="font-semibold">{toast.title}</p>}
-          <p className="text-sm">{toast.message}</p>
+          <p className="text-sm">{toast.description ?? toast.message}</p>
         </div>
         <button
           onClick={onClose}

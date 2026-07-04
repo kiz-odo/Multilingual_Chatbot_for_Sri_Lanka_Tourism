@@ -3,7 +3,6 @@ Pytest configuration and fixtures
 """
 
 import pytest
-import asyncio
 from httpx import AsyncClient, ASGITransport
 from typing import AsyncGenerator, Dict
 import sys
@@ -29,19 +28,11 @@ from backend.app.services.auth_service import AuthService
 pytest_plugins = ('pytest_asyncio',)
 
 
-# Event loop configuration - use function scope to avoid loop attachment issues
-@pytest.fixture(scope="function")
-def event_loop():
-    """Create event loop for each test function"""
-    loop = asyncio.new_event_loop()
-    asyncio.set_event_loop(loop)
-    yield loop
-    # Clean up pending tasks
-    pending = asyncio.all_tasks(loop)
-    for task in pending:
-        task.cancel()
-    loop.run_until_complete(asyncio.gather(*pending, return_exceptions=True))
-    loop.close()
+# NOTE: Do NOT redefine the `event_loop` fixture here. pytest-asyncio (>=0.23)
+# deprecated overriding it, and doing so while `asyncio_mode = "auto"` causes
+# "got Future attached to a different loop" errors because sync fixtures and
+# async tests end up on different loops. The loop scope is now configured via
+# `asyncio_default_fixture_loop_scope = "function"` in pyproject.toml instead.
 
 
 @pytest.fixture(scope="function", autouse=True)
@@ -90,7 +81,7 @@ async def client() -> AsyncGenerator[AsyncClient, None]:
 
 
 @pytest.fixture(scope="function")
-async def test_user(event_loop) -> User:
+async def test_user() -> User:
     """Create a test user with unique email to avoid duplicates"""
     import uuid
     unique_suffix = uuid.uuid4().hex[:8]
@@ -123,7 +114,7 @@ async def test_user(event_loop) -> User:
 
 
 @pytest.fixture(scope="function")
-async def admin_user(event_loop) -> User:
+async def admin_user() -> User:
     """Create an admin user with unique username to avoid duplicates"""
     import uuid
     unique_suffix = uuid.uuid4().hex[:8]

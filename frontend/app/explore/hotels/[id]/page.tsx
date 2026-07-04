@@ -74,7 +74,7 @@ export default function HotelDetailPage() {
     );
   }
 
-  const primaryImage = hotel.images?.[0];
+  const primaryImage = hotel.images?.[0]?.url;
 
   return (
     <div className="container mx-auto px-4 sm:px-6 lg:px-8 py-8">
@@ -93,7 +93,7 @@ export default function HotelDetailPage() {
             <div className="relative h-96 rounded-2xl overflow-hidden">
               <Image
                 src={primaryImage}
-                alt={hotel.name || "Hotel"}
+                alt={getLocalizedText(hotel.name, currentLanguage) || "Hotel"}
                 fill
                 className="object-cover"
               />
@@ -132,7 +132,7 @@ export default function HotelDetailPage() {
             <CardHeader>
               <div className="flex items-start justify-between">
                 <div>
-                  <CardTitle className="text-2xl">{hotel.name}</CardTitle>
+                  <CardTitle className="text-2xl">{getLocalizedText(hotel.name, currentLanguage)}</CardTitle>
                   <CardDescription className="flex items-center mt-2">
                     <MapPin className="mr-1 h-4 w-4" />
                     {hotel.location?.city || hotel.location?.address}

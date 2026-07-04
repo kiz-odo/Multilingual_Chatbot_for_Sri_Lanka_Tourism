@@ -73,7 +73,7 @@ export default function RestaurantDetailPage() {
     );
   }
 
-  const primaryImage = restaurant.images?.[0];
+  const primaryImage = restaurant.images?.[0]?.url;
 
   return (
     <div className="container mx-auto px-4 sm:px-6 lg:px-8 py-8">
@@ -92,7 +92,7 @@ export default function RestaurantDetailPage() {
             <div className="relative h-96 rounded-2xl overflow-hidden">
               <Image
                 src={primaryImage}
-                alt={restaurant.name || "Restaurant"}
+                alt={getLocalizedText(restaurant.name, currentLanguage) || "Restaurant"}
                 fill
                 className="object-cover"
               />
@@ -137,7 +137,7 @@ export default function RestaurantDetailPage() {
             <CardHeader>
               <div className="flex items-start justify-between">
                 <div>
-                  <CardTitle className="text-2xl">{restaurant.name}</CardTitle>
+                  <CardTitle className="text-2xl">{getLocalizedText(restaurant.name, currentLanguage)}</CardTitle>
                   <CardDescription className="flex items-center mt-2">
                     <MapPin className="mr-1 h-4 w-4" />
                     {restaurant.location?.city || restaurant.location?.address}
@@ -169,7 +169,14 @@ export default function RestaurantDetailPage() {
                 <div className="flex items-center space-x-2">
                   <Clock className="h-5 w-5 text-muted-foreground" />
                   <span className="text-sm">
-                    {restaurant.opening_hours}
+                    {typeof restaurant.opening_hours === "string"
+                      ? restaurant.opening_hours
+                      : restaurant.opening_hours.map((h, i) => (
+                          <span key={i} className="block">
+                            {h.day ?? `Day ${h.day_of_week}`}:{" "}
+                            {h.is_closed ? "Closed" : `${h.open_time} - ${h.close_time}`}
+                          </span>
+                        ))}
                   </span>
                 </div>
               )}

@@ -8,13 +8,15 @@ A production-ready, enterprise-grade AI-powered multilingual chatbot system for 
 
 ## 📚 Documentation
 
+> 📖 Full documentation index: **[docs/README.md](./docs/README.md)**
+
 | Document | Description |
 |----------|-------------|
-| **[🚀 STARTUP_GUIDE.md](./STARTUP_GUIDE.md)** | **Complete step-by-step startup guide with error fixes (START HERE!)** |
-| **[Getting Started](./GETTING_STARTED.md)** | Development setup guide |
-| **[Quick Reference](./QUICK_REFERENCE.md)** | Quick command reference |
-| **[API Documentation](./API_DOCUMENTATION.md)** | Full API reference |
-| **[Deployment Guide](./DEPLOYMENT_GUIDE.md)** | Production deployment |
+| **[Project Overview](./docs/PROJECT_OVERVIEW.md)** | End-to-end overview of the system |
+| **[Backend Overview](./docs/BACKEND_OVERVIEW.md)** / **[Frontend Overview](./docs/FRONTEND_OVERVIEW.md)** | High-level tours of each app |
+| **[Development Guide](./backend/DEVELOPMENT.md)** | Local development setup |
+| **[API Documentation](./backend/API_DOCUMENTATION.md)** | Full REST API reference |
+| **[Deployment Guide](./backend/DEPLOYMENT.md)** | Production deployment |
 
 ---
 
@@ -74,7 +76,7 @@ uvicorn backend.app.main:app --reload --host 0.0.0.0 --port 8000
 
 **Or use VS Code debugger:** Press `F5` → Select "FastAPI: Backend Server"
 
-👉 **See [GETTING_STARTED.md](./GETTING_STARTED.md) for complete development guide**
+👉 **See [Development Guide](./backend/DEVELOPMENT.md) for complete development guide**
 
 ### Prerequisites
 - **Python**: 3.9 or higher
@@ -109,7 +111,7 @@ uvicorn backend.app.main:app --reload --host 0.0.0.0 --port 8000
 # Or press F5 in VS Code
 ```
 
-📖 **Full Guide:** [GETTING_STARTED.md](./GETTING_STARTED.md)
+📖 **Full Guide:** [Development Guide](./backend/DEVELOPMENT.md)
 
 ### 🐳 Mode 2: Full Docker Deployment (Future - Production Ready)
 
@@ -126,7 +128,7 @@ uvicorn backend.app.main:app --reload --host 0.0.0.0 --port 8000
 docker-compose -f docker-compose.production.yml up -d
 ```
 
-📖 **Full Guide:** [DEPLOYMENT_GUIDE.md](./DEPLOYMENT_GUIDE.md)
+📖 **Full Guide:** [Deployment Guide](./backend/DEPLOYMENT.md)
 
 ---
 
@@ -438,7 +440,7 @@ Access Grafana at http://localhost:3001 (default credentials: admin/admin123)
 
 ## 🚀 Production Deployment
 
-See [DEPLOYMENT_GUIDE.md](DEPLOYMENT_GUIDE.md) for detailed deployment instructions.
+See [Deployment Guide](./backend/DEPLOYMENT.md) for detailed deployment instructions.
 
 ### Quick Deploy to Cloud
 

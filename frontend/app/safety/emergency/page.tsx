@@ -45,7 +45,7 @@ export default function EmergencyContactsPage() {
     queryKey: ["embassies"],
     queryFn: async () => {
       try {
-        const response = await apiClient.safety.getEmbassies();
+        const response = await apiClient.safety.getEmbassy();
         return response.data || [];
       } catch {
         return [
