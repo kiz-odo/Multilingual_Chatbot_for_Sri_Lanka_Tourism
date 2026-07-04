@@ -46,11 +46,11 @@ export function debounce<T extends (...args: any[]) => any>(
 }
 
 export function getLocalizedText(
-  obj: Record<string, string | undefined> | undefined,
+  obj: Record<string, string | null | undefined> | null | undefined,
   language: string = "en",
   fallback: string = ""
 ): string {
   if (!obj) return fallback;
-  return obj[language] || obj.en || Object.values(obj)[0] || fallback;
+  return obj[language] || obj.en || Object.values(obj).find(Boolean) || fallback;
 }
 
