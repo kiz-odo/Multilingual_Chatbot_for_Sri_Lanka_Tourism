@@ -72,6 +72,17 @@ htmlcov/
 .tox/
 .hypothesis/
 
+# Test / coverage reports (build artifacts, not source)
+test_results*.txt
+test_full_results.txt
+full_test_results.txt
+coverage.json
+coverage.xml
+**/coverage.json
+**/coverage.xml
+database_images_report.html
+database_validation_report.json
+
 # Jupyter Notebook
 .ipynb_checkpoints
 
