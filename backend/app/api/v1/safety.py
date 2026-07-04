@@ -18,7 +18,7 @@ from backend.app.services.safety_service import SafetyService
 from backend.app.core.auth import get_current_active_user
 from backend.app.middleware.error_handler import NotFoundException, BadRequestException
 
-router = APIRouter(prefix="/safety", tags=["Safety & Emergency"])
+router = APIRouter(tags=["Safety & Emergency"])
 logger = logging.getLogger(__name__)
 
 safety_service = SafetyService()
