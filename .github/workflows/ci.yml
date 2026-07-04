@@ -8,9 +8,10 @@ on:
 
 env:
   PYTHON_VERSION: '3.11'
-  # Current backend coverage is ~56%. Gate at the real level and ratchet it
-  # up over time rather than failing every run against an unmet 80% target.
-  COVERAGE_THRESHOLD: 55
+  # Backend coverage is ~58% (higher in CI, where GraphQL is exercised).
+  # Gate just below the real level and ratchet up over time rather than
+  # failing every run against an unmet 80% target.
+  COVERAGE_THRESHOLD: 57
 
 jobs:
   lint:
