@@ -529,7 +529,7 @@ npm run lint                # Run ESLint
 ## **🧪 Testing**
 
 ### **Testing Checklist**
-See [TESTING_GUIDE.md](frontend/TESTING_GUIDE.md) for detailed testing procedures:
+See [TESTING_GUIDE.md](../frontend/TESTING_GUIDE.md) for detailed testing procedures:
 
 - ✅ Voice input functionality
 - ✅ Image upload & recognition
