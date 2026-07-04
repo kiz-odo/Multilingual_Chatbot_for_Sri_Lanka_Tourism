@@ -140,7 +140,7 @@ export function t(
 }
 
 export function getLocalizedText(
-  obj: Record<string, string | undefined> | undefined,
+  obj: Record<string, string | null | undefined> | null | undefined,
   language: Language = "en",
   fallback: string = ""
 ): string {

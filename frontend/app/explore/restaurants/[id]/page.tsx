@@ -173,8 +173,9 @@ export default function RestaurantDetailPage() {
                       ? restaurant.opening_hours
                       : restaurant.opening_hours.map((h, i) => (
                           <span key={i} className="block">
-                            {h.day ?? `Day ${h.day_of_week}`}:{" "}
-                            {h.is_closed ? "Closed" : `${h.open_time} - ${h.close_time}`}
+                            {["Mon", "Tue", "Wed", "Thu", "Fri", "Sat", "Sun"][h.day_of_week] ??
+                              `Day ${h.day_of_week}`}
+                            : {h.is_closed ? "Closed" : `${h.open_time} - ${h.close_time}`}
                           </span>
                         ))}
                   </span>

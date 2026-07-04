@@ -10,7 +10,8 @@
     "build:low-memory": "cross-env NODE_OPTIONS=--max-old-space-size=2048 next build",
     "build:simple": "next build",
     "start": "next start",
-    "lint": "eslint"
+    "lint": "eslint",
+    "gen:api": "openapi-typescript ../openapi.json -o types/api-schema.ts"
   },
   "dependencies": {
     "@hookform/resolvers": "^5.2.2",
@@ -38,6 +39,7 @@
     "cross-env": "^10.1.0",
     "eslint": "^9",
     "eslint-config-next": "16.1.1",
+    "openapi-typescript": "^7.13.0",
     "tailwindcss": "^4",
     "typescript": "^5"
   }

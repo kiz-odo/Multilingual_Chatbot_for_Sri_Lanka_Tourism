@@ -1,3 +1,10 @@
+import type {
+  Attraction as ApiAttraction,
+  Hotel as ApiHotel,
+  Restaurant as ApiRestaurant,
+  Event as ApiEvent,
+} from "./api";
+
 export type Language = "en" | "si" | "ta" | "de" | "fr" | "zh" | "ja";
 
 export interface User {
@@ -37,164 +44,50 @@ export interface ChatMessage {
   response_time_ms?: number;
 }
 
-export interface Attraction {
-  id: string;
-  name: {
-    en: string;
-    si?: string;
-    ta?: string;
-    [key: string]: string | undefined;
-  };
-  description: {
-    en: string;
-    si?: string;
-    ta?: string;
-    [key: string]: string | undefined;
-  };
-  category: string;
-  location: {
-    address: string;
-    city: string;
-    province: string;
-    coordinates: [number, number];
-  };
-  is_featured?: boolean;
-  popularity_score?: number;
-  average_rating?: number;
-  total_reviews?: number;
+// ── Domain entities ──────────────────────────────────────────────────────
+// Anchored to the backend OpenAPI schema (see ./api.ts; regenerate with
+// `npm run gen:api`). Each entity is the generated response type intersected
+// with a few frontend-only convenience fields the API does not return yet, so
+// the shared fields can never silently drift from the backend again.
+
+// Frontend-only convenience fields the API does not return, plus a few known
+// divergences where the UI uses a different shape than the response schema
+// (kept explicit via Omit so the rest of each entity stays backend-anchored).
+
+export type Attraction = ApiAttraction & {
   review_count?: number;
   estimated_visit_duration?: string;
-  pricing?: Array<{
-    category: string;
-    price: number;
-    currency: string;
-  }>;
-  images?: Array<{
-    url: string;
-    alt_text?: {
-      en: string;
-      si?: string;
-      ta?: string;
-    };
-    is_primary?: boolean;
-  }>;
-}
+};
 
-export interface Hotel {
-  id: string;
-  name: {
-    en: string;
-    si?: string;
-    ta?: string;
-  };
-  description: {
-    en: string;
-    si?: string;
-    ta?: string;
-  };
-  location: {
-    address: string;
-    city: string;
-    province?: string;
-    coordinates: [number, number];
-  };
+export type Hotel = Omit<ApiHotel, "star_rating"> & {
+  /** UI treats star rating numerically; API returns a StarRating enum string. */
   star_rating?: number;
   rating?: number;
-  average_rating?: number;
   review_count?: number;
-  total_reviews?: number;
+  price_range?: string;
   price_per_night?: number;
-  price_range?: string;
-  amenities?: string[];
-  contact?: {
-    phone?: string;
-    email?: string;
-    website?: string;
-  };
-  images?: Array<{
-    url: string;
-    alt_text?: string;
-    is_primary?: boolean;
-  }>;
-}
+  contact?: { phone?: string; email?: string; website?: string };
+};
 
-export interface Restaurant {
-  id: string;
-  name: {
-    en: string;
-    si?: string;
-    ta?: string;
-  };
-  description: {
-    en: string;
-    si?: string;
-    ta?: string;
-  };
-  cuisine_type: string;
-  location: {
-    address: string;
-    city: string;
-    province?: string;
-    coordinates: [number, number];
-  };
-  price_range?: string;
+export type Restaurant = ApiRestaurant & {
   rating?: number;
-  average_rating?: number;
   review_count?: number;
-  total_reviews?: number;
   specialties?: string[];
-  opening_hours?: string | Array<{
-    day_of_week?: number;
-    day?: string;
-    open_time?: string;
-    close_time?: string;
-    is_closed?: boolean;
-  }>;
-  contact?: {
-    phone?: string;
-    email?: string;
-    website?: string;
-  };
-  images?: Array<{
-    url: string;
-    alt_text?: string;
-  }>;
-}
+  /** UI uses a single cuisine string; API returns `cuisine_types` (array). */
+  cuisine_type?: string;
+  contact?: { phone?: string; email?: string; website?: string };
+};
 
-export interface Event {
-  id: string;
-  name: {
-    en: string;
-    si?: string;
-    ta?: string;
-  };
-  title?: {
-    en: string;
-    si?: string;
-    ta?: string;
-  };
-  description: {
-    en: string;
-    si?: string;
-    ta?: string;
-  };
-  category: string;
-  start_date: string;
+export type Event = Omit<ApiEvent, "status"> & {
+  /** UI fallbacks — the API uses `title`, `schedule`, `tickets`, and a
+   *  different `status` vocabulary. */
+  status?: string;
+  name?: ApiEvent["title"];
+  start_date?: string;
   end_date?: string;
-  status?: "upcoming" | "ongoing" | "past" | "cancelled";
   price?: number;
-  location: {
-    address: string;
-    city: string;
-    province?: string;
-    coordinates: [number, number];
-  };
   image_url?: string;
-  images?: Array<{
-    url: string;
-    alt_text?: string;
-  }>;
-}
+};
 
 export interface Weather {
   city: string;
